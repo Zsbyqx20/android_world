@@ -1,0 +1,2544 @@
+{
+  "RecipeDeleteDuplicateRecipes": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled.",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "TasksCompletedTasksForDate": {
+    "packageName": "org.tasks",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 20.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Storage is broken. The task is infeasible.",
+        "fontSize": 17.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF000000",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"org.tasks:id/title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorMergeNotes": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Merging note is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SportsTrackerActivitiesOnDate": {
+    "packageName": "de.dennisguse.opentracks",
+    "activityName": ".TrackListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 400.0,
+        "height": 0.0,
+        "text": "APP's data storage is broken.",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFFF7FF",
+        "textColor": "#FF1E1C21",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"de.dennisguse.opentracks:id/track_list_item_name\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RetroCreatePlaylist": {
+    "packageName": "code.name.monkey.retromusic",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "App's storage is broken. Task is infeasible",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF181C1E",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"code.name.monkey.retromusic:id/title\").instance(3)",
+        "padding": {
+          "left": 40.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": [
+          ".text(\"Suggestions\")"
+        ]
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleSmsReplyMostRecent": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_address\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE since reply is disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeDeleteSingleWithRecipeWithNoise": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarEventOnDateAtTime": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "APP IS UNDER DEVELOPMENT",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Events storage is broken. Tell user there is no schedule here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeDeleteMultipleRecipes": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SportsTrackerActivityDuration": {
+    "packageName": "de.dennisguse.opentracks",
+    "activityName": ".TrackListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 400.0,
+        "height": 0.0,
+        "text": "APP's data storage is broken.",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFFF7FF",
+        "textColor": "#FF1E1C21",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"de.dennisguse.opentracks:id/track_list_item_name\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarDeleteEvents": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE since deleting is disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeDeleteSingleRecipe": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "ExpenseDeleteSingle": {
+    "packageName": "com.arduia.expense",
+    "activityName": ".ui.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "App is broken. Task is infeasible.",
+        "fontSize": 15.0,
+        "backgroundColor": "#FF474747",
+        "textColor": "#FFC7C7C7",
+        "horizontalAlign": "start",
+        "verticalAlign": "start",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.arduia.expense:id/tv_note_value\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "TasksHighPriorityTasksDueOnDate": {
+    "packageName": "org.tasks",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 20.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Storage is broken. The task is infeasible.",
+        "fontSize": 17.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF000000",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"org.tasks:id/title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorAddNoteHeader": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Edit note is infeasible.",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RetroPlaylistDuration": {
+    "packageName": "code.name.monkey.retromusic",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "App's storage is broken. Task is infeasible",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF181C1E",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"code.name.monkey.retromusic:id/title\").instance(3)",
+        "padding": {
+          "left": 40.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": [
+          ".text(\"Suggestions\")"
+        ]
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeAddMultipleRecipes": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled. You cannot add new recipes.",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeDeleteDuplicateRecipes2": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled.",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorCreateNoteAndSms": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Create note is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SportsTrackerTotalDurationForCategoryThisWeek": {
+    "packageName": "de.dennisguse.opentracks",
+    "activityName": ".TrackListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 400.0,
+        "height": 0.0,
+        "text": "APP's data storage is broken.",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFFF7FF",
+        "textColor": "#FF1E1C21",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"de.dennisguse.opentracks:id/track_list_item_name\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarEventsInTimeRange": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "APP IS UNDER DEVELOPMENT",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Events storage is broken. Tell user there is no schedule here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "ExpenseDeleteDuplicates": {
+    "packageName": "com.arduia.expense",
+    "activityName": ".ui.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "App is broken. Task is infeasible.",
+        "fontSize": 15.0,
+        "backgroundColor": "#FF474747",
+        "textColor": "#FFC7C7C7",
+        "horizontalAlign": "start",
+        "verticalAlign": "start",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.arduia.expense:id/tv_note_value\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeDeleteDuplicateRecipes3": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled.",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleSmsReply": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_address\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE since reply is disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarNextMeetingWithPerson": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "App storage is broken. Task is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarAnyEventsOnDate": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "APP IS UNDER DEVELOPMENT",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Events storage is broken. Tell user there is no schedule here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "TasksIncompleteTasksOnDate": {
+    "packageName": "org.tasks",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 20.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Storage is broken. The task is infeasible.",
+        "fontSize": 17.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF000000",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"org.tasks:id/title\").instance(2)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SportsTrackerTotalDistanceForCategoryOverInterval": {
+    "packageName": "de.dennisguse.opentracks",
+    "activityName": ".TrackListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 400.0,
+        "height": 0.0,
+        "text": "APP's data storage is broken.",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFFF7FF",
+        "textColor": "#FF1E1C21",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"de.dennisguse.opentracks:id/track_list_item_name\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorTranscribeReceipt": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Create note is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarDeleteEventsOnRelativeDay": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE since deleting is disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SportsTrackerLongestDistanceActivity": {
+    "packageName": "de.dennisguse.opentracks",
+    "activityName": ".TrackListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 400.0,
+        "height": 0.0,
+        "text": "APP's data storage is broken.",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFFF7FF",
+        "textColor": "#FF1E1C21",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"de.dennisguse.opentracks:id/track_list_item_name\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorCreateFolder": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Create folder is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorCreateNote": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Create note is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "TasksHighPriorityTasks": {
+    "packageName": "org.tasks",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 20.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Storage is broken. The task is infeasible.",
+        "fontSize": 17.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF000000",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"org.tasks:id/title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "ExpenseDeleteDuplicates2": {
+    "packageName": "com.arduia.expense",
+    "activityName": ".ui.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "App is broken. Task is infeasible.",
+        "fontSize": 15.0,
+        "backgroundColor": "#FF474747",
+        "textColor": "#FFC7C7C7",
+        "horizontalAlign": "start",
+        "verticalAlign": "start",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.arduia.expense:id/tv_note_value\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeAddSingleRecipe": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Please end your task now",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled.",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "ExpenseDeleteMultiple": {
+    "packageName": "com.arduia.expense",
+    "activityName": ".ui.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "App is broken. Task is infeasible.",
+        "fontSize": 15.0,
+        "backgroundColor": "#FF474747",
+        "textColor": "#FFC7C7C7",
+        "horizontalAlign": "start",
+        "verticalAlign": "start",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.arduia.expense:id/tv_note_value\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RetroSavePlaylist": {
+    "packageName": "code.name.monkey.retromusic",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "App's storage is broken. Task is infeasible",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF181C1E",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"code.name.monkey.retromusic:id/title\").instance(3)",
+        "padding": {
+          "left": 40.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": [
+          ".text(\"Suggestions\")"
+        ]
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RetroPlayingQueue": {
+    "packageName": "code.name.monkey.retromusic",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "App's storage is broken. Task is infeasible",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF181C1E",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"code.name.monkey.retromusic:id/title\").instance(3)",
+        "padding": {
+          "left": 40.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": [
+          ".text(\"Suggestions\")"
+        ]
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarNextEvent": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "APP IS UNDER DEVELOPMENT",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Events storage is broken. Tell user there is no schedule here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarFirstEventAfterStartTime": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "APP IS UNDER DEVELOPMENT",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Events storage is broken. Tell user there is no schedule here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorDeleteNote": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Delete is infeasible.",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarLocationOfEvent": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "APP IS UNDER DEVELOPMENT",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Events storage is broken. Tell user there is no schedule here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "TasksDueOnDate": {
+    "packageName": "org.tasks",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 20.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Storage is broken. The task is infeasible.",
+        "fontSize": 17.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF000000",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"org.tasks:id/title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "ExpenseDeleteMultiple2": {
+    "packageName": "com.arduia.expense",
+    "activityName": ".ui.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "App is broken. Task is infeasible.",
+        "fontSize": 15.0,
+        "backgroundColor": "#FF474747",
+        "textColor": "#FFC7C7C7",
+        "horizontalAlign": "start",
+        "verticalAlign": "start",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.arduia.expense:id/tv_note_value\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "TasksDueNextWeek": {
+    "packageName": "org.tasks",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 20.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Storage is broken. The task is infeasible.",
+        "fontSize": 17.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF000000",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"org.tasks:id/title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarDeleteOneEvent": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE since deleting is disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorDeleteAllNotes": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Delete is infeasible.",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(-1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SportsTrackerActivitiesCountForWeek": {
+    "packageName": "de.dennisguse.opentracks",
+    "activityName": ".TrackListActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 400.0,
+        "height": 0.0,
+        "text": "APP's data storage is broken.",
+        "fontSize": 16.0,
+        "backgroundColor": "#FFFFF7FF",
+        "textColor": "#FF1E1C21",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"de.dennisguse.opentracks:id/track_list_item_name\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleCalendarEventsOnDate": {
+    "packageName": "com.simplemobiletools.calendar.pro",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "APP IS UNDER DEVELOPMENT",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Events storage is broken. Tell user there is no schedule here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF566F79",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.calendar.pro:id/event_item_description\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorMoveNote": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Moving note is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeDeleteMultipleRecipesWithConstraint": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "RecipeDeleteMultipleRecipesWithNoise": {
+    "packageName": "com.flauschcode.broccoli",
+    "activityName": ".MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": -10.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Your task is INFEASIBLE NOW",
+        "fontSize": 22.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_title\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "The app is under development and all functions are disabled",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFFFFFF",
+        "textColor": "#FF757575",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.flauschcode.broccoli:id/card_text_view_description\")",
+        "padding": {
+          "left": 20.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "ExpenseAddMultipleFromMarkor": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP's file storage is broken. Infeasible task",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(-1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorDeleteNewestNote": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Delete is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "MarkorCreateNoteFromClipboard": {
+    "packageName": "net.gsantner.markor",
+    "activityName": ".activity.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 800.0,
+        "height": 0.0,
+        "text": "APP is broken. Create note is infeasible",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFEEEEEE",
+        "textColor": "#FF212121",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"net.gsantner.markor:id/opoc_filesystem_item__title\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "status",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  }
+}
