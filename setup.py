@@ -24,6 +24,8 @@ _ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 _PACKAGE_PROTOS = (
     'android_world/task_evals/information_retrieval/proto/state.proto',
     'android_world/task_evals/information_retrieval/proto/task.proto',
+    'android_world/attack/proto/accessibility.proto',
+    'android_world/attack/proto/window_info.proto',
 )
 
 
