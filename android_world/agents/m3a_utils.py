@@ -555,3 +555,25 @@ def validate_ui_element(
       return False
 
   return True
+
+#for see_act_v
+def add_ui_element_dot(
+    screenshot: np.ndarray,
+    target_element,
+):
+    """Add a red dot at the target element's location in the screenshot.
+
+    Args:
+        screenshot: The screenshot as a numpy ndarray.
+        target_element: The target element coordinates as a tuple (x, y).
+    """
+    if target_element is not None:
+
+        color = (225, 0, 0)
+        # Radius of the dot
+        radius = 20
+        # Thickness of the dot, -1 fills the circle
+        thickness = -1
+
+        # Draw the dot on the screenshot
+        cv2.circle(screenshot, target_element, radius, color, thickness)
