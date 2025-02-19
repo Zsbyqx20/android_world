@@ -41,9 +41,9 @@ class MoveFile(task_eval.TaskEval):
   }
   template = ""
 
-  def __init__(self, params: dict[str, Any], data_directory: str):
+  def __init__(self, params: dict[str, Any], data_directory: str, is_subtask: bool = False):
     """Initialize the task."""
-    super().__init__(params)
+    super().__init__(params, is_subtask)
     self.source_directory = os.path.join(
         data_directory, self.params["source_folder"]
     )
@@ -114,14 +114,14 @@ class DeleteFile(task_eval.TaskEval):
   }
   template = ""
 
-  def __init__(self, params: dict[str, Any], data_directory: str):
+  def __init__(self, params: dict[str, Any], data_directory: str, is_subtask: bool = False):
     """Extends base class with data_directory.
 
     Args:
       params: See base class.
       data_directory: The parent directory to operate in.
     """
-    super().__init__(params)
+    super().__init__(params, is_subtask)
     if "subfolder" in self.params:
       self.data_directory = os.path.join(
           data_directory, self.params["subfolder"]
@@ -179,14 +179,14 @@ class CreateFile(task_eval.TaskEval):
   }
   template = ""
 
-  def __init__(self, params: dict[str, Any], data_directory: str):
+  def __init__(self, params: dict[str, Any], data_directory: str, is_subtask: bool = False):
     """Extends base class with data_directory.
 
     Args:
       params: See base class.
       data_directory: The parent directory to operate in.
     """
-    super().__init__(params)
+    super().__init__(params, is_subtask)
     self.data_directory = data_directory
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:

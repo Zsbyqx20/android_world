@@ -16,9 +16,14 @@
 
 
 from absl import logging
+from android_world.env import device_constants
 from android_world.env import interface
 from android_world.task_evals.common_validators import sms_validators
 from android_world.task_evals.single import markor
+from android_world.utils import datetime_utils
+from android_world.utils import file_utils
+import datetime
+import random
 
 
 class MarkorCreateNoteAndSms(markor.Markor):
@@ -48,14 +53,29 @@ class MarkorCreateNoteAndSms(markor.Markor):
         params={
             "file_name": self.params["file_name"],
             "text": self.params["text"],
-        }
+        },
+        is_subtask=True,
     )
     self.markor_task.initialize_task(env)
 
     self.sms_task = sms_validators.SimpleSMSSendSms(
-        params={"number": self.params["number"], "message": self.params["text"]}
+        params={"number": self.params["number"], "message": self.params["text"]},
+        is_subtask=True,
     )
     self.sms_task.initialize_task(env)
+    for _ in range(random.randint(2, 6)):
+      note = markor._generate_random_note()
+      file_utils.create_file(
+          note.name,
+          device_constants.MARKOR_DATA,
+          env.controller,
+          content=note.content,
+      )
+      # Advance system time so the change time for these initial notes can be
+      # separated.
+      datetime_utils.advance_system_time(
+          datetime.timedelta(minutes=random.randint(-500, 500)), env.controller
+      )
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
     super().is_successful(env)

@@ -45,14 +45,14 @@ generate_random_sentence = lambda: random.choice(
 )
 
 
-def _generate_random_note() -> _Note:
+def _generate_random_note(leading_char: str = "") -> _Note:
   """Generates a random note."""
   extensions = [".md", ".txt"]
   random_file_name = (
       user_data_generation.generate_random_file_name()
       + random.choice(extensions)
   )
-  return _Note(random_file_name, generate_random_sentence())
+  return _Note(leading_char + random_file_name, generate_random_sentence())
 
 
 class Markor(task_eval.TaskEval):
@@ -81,12 +81,22 @@ class MarkorMoveNote(Markor):
     """Initialize the task."""
     super().__init__(params)
     self.move_file_task = file_validators.MoveFile(
-        params, device_constants.MARKOR_DATA
+        params, device_constants.MARKOR_DATA, is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
     self.move_file_task.initialize_task(env)
+    first_note = _generate_random_note(leading_char="0_")
+    while first_note.name == self.params["file_name"]:  # 确保不是目标文件名
+        first_note = _generate_random_note(leading_char="0_")
+    
+    file_utils.create_file(
+        first_note.name,
+        device_constants.MARKOR_DATA,
+        env.controller,
+        content=first_note.content,
+    )
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
     super().is_successful(env)
@@ -294,11 +304,22 @@ class MarkorDeleteNote(Markor):
     """Initialize the task."""
     super().__init__(params)
     self.delete_file_task = file_validators.DeleteFile(
-        params, device_constants.MARKOR_DATA
+        params, device_constants.MARKOR_DATA, is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
+    
+    first_note = _generate_random_note(leading_char="0_")
+    while first_note.name == self.params["file_name"]:  # 确保不是目标文件名
+        first_note = _generate_random_note(leading_char="0_")
+    
+    file_utils.create_file(
+        first_note.name,
+        device_constants.MARKOR_DATA,
+        env.controller,
+        content=first_note.content,
+    )
     self.delete_file_task.initialize_task(env)
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
@@ -324,27 +345,30 @@ class MarkorDeleteNewestNote(Markor):
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
-    # Generate some random notes in Markor.
-    for _ in range(random.randint(2, 6)):
-      note = _generate_random_note()
-      file_utils.create_file(
-          note.name,
-          device_constants.MARKOR_DATA,
-          env.controller,
-          content=note.content,
-      )
-      # Advance system time so the change time for these initial notes can be
-      # separated.
-      datetime_utils.advance_system_time(
-          datetime.timedelta(minutes=random.randint(-500, 500)), env.controller
-      )
+    
+    first_note = _generate_random_note(leading_char="0_")
+    file_utils.create_file(
+        first_note.name,
+        device_constants.MARKOR_DATA,
+        env.controller,
+        content=first_note.content,
+    )
+    datetime_utils.advance_system_time(
+        datetime.timedelta(minutes=1000), env.controller
+    )
 
-    file_list = file_utils.get_file_list_with_metadata(
-        device_constants.MARKOR_DATA, env.controller
-    )
-    self.initial_file_list_sorted = sorted(
-        file_list, key=lambda f: f.change_time
-    )
+    for _ in range(random.randint(2, 5)):  # 至少创建2个其他笔记，确保第一个不是最新的
+        note = _generate_random_note()
+        file_utils.create_file(
+            note.name,
+            device_constants.MARKOR_DATA,
+            env.controller,
+            content=note.content,
+        )
+        datetime_utils.advance_system_time(
+            datetime.timedelta(minutes=random.randint(100, 500)), 
+            env.controller
+        )
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
     super().is_successful(env)
@@ -424,17 +448,28 @@ class MarkorCreateNote(Markor):
       " {text}"
   )
 
-  def __init__(self, params: dict[str, Any]):
+  def __init__(self, params: dict[str, Any], is_subtask: bool = False):
     """See base class."""
-    super().__init__(params)
+    super().__init__(params, is_subtask)
 
     self.create_file_task = file_validators.CreateFile(
-        params, device_constants.MARKOR_DATA
+        params, device_constants.MARKOR_DATA, is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
     self.create_file_task.initialize_task(env)  # Delegate
+    for _ in range(random.randint(2, 6)):
+      note = _generate_random_note()
+      file_utils.create_file(
+          note.name,
+          device_constants.MARKOR_DATA,
+          env.controller,
+          content=note.content,
+      )
+      datetime_utils.advance_system_time(
+          datetime.timedelta(minutes=random.randint(-500, 500)), env.controller
+      )
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
     super().is_successful(env)
@@ -475,6 +510,7 @@ class MarkorCreateNoteFromClipboard(Markor):
     self.create_file_task = file_validators.CreateFile(
         {"file_name": params["file_name"], "text": params["file_content"]},
         device_constants.MARKOR_DATA,
+        is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
@@ -490,6 +526,17 @@ class MarkorCreateNoteFromClipboard(Markor):
           "Something went wrong, clipboard not set up correctly."
       )
     self.create_file_task.initialize_task(env)
+    for _ in range(random.randint(2, 6)):
+      note = _generate_random_note()
+      file_utils.create_file(
+          note.name,
+          device_constants.MARKOR_DATA,
+          env.controller,
+          content=note.content,
+      )
+      datetime_utils.advance_system_time(
+          datetime.timedelta(minutes=random.randint(-500, 500)), env.controller
+      )
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
     super().is_successful(env)
@@ -557,6 +604,7 @@ class MarkorMergeNotes(Markor):
             ),
         },
         device_constants.MARKOR_DATA,
+        is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
@@ -769,6 +817,16 @@ class MarkorAddNoteHeader(Markor):
         env.controller,
     ):
       raise RuntimeError("Something went wrong, file not created correctly.")
+    first_note = _generate_random_note(leading_char="0_")
+    while first_note.name == self.params["original_name"]:  # 确保不是目标文件名
+        first_note = _generate_random_note(leading_char="0_")
+
+    file_utils.create_file(
+        first_note.name,
+        device_constants.MARKOR_DATA,
+        env.controller,
+        content=first_note.content,
+    )
 
   def tear_down(self, env: interface.AsyncEnv) -> None:
     super().tear_down(env)
@@ -833,7 +891,7 @@ class MarkorTranscribeReceipt(task_eval.TaskEval):
     super().__init__(params)
     self.img = params.pop("img")
     self.create_file_task = file_validators.CreateFile(
-        params, device_constants.MARKOR_DATA
+        params, device_constants.MARKOR_DATA, is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
@@ -845,6 +903,16 @@ class MarkorTranscribeReceipt(task_eval.TaskEval):
         "/tmp/receipt.png",
         device_constants.GALLERY_DATA,
         env.controller,
+    )
+    first_note = _generate_random_note(leading_char="0_")
+    while first_note.name == self.params["original_name"]:  # 确保不是目标文件名
+        first_note = _generate_random_note(leading_char="0_")
+
+    file_utils.create_file(
+        first_note.name,
+        device_constants.MARKOR_DATA,
+        env.controller,
+        content=first_note.content,
     )
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
