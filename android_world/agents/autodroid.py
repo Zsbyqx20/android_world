@@ -237,7 +237,7 @@ class Autodroid(base_agent.EnvironmentInteractingAgent):
             raise RuntimeError("Error calling LLM in action selection phase.")
         step_data["action_output"] = action_output
         step_data["action_raw_response"] = raw_response
-
+        print("action_output:",action_output)
         # parse the json
         v = extract_json(action_output)
         if v is None:

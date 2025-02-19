@@ -26,7 +26,7 @@ from android_world.agents.m3a_utils import _logical_to_physical
 Deploy Aria-UI with vLLM, then get the api_key and api_base from the deployment for directly API call.
 """
 ariaui_api_key = os.environ["OPENAI_API_KEY"]
-ariaui_api_base = "https://api.apikey.vip/v1"
+ariaui_api_base = os.environ['OPENAI_BASE_URL']+"/v1"
 
 client = OpenAI(
     api_key=ariaui_api_key,
