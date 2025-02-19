@@ -101,11 +101,22 @@ class JSONAction:
   app_name: Optional[str] = None
   keycode: Optional[str] = None
 
+  # for aria-UI
+  target: Optional[str] = None
+  instruction: Optional[str] = None
+  coords: Optional[tuple[int, int]] = None
+  # for aria and UGround
+  element:Optional[str]=None
+
   def __post_init__(self):
     if self.action_type not in _ACTION_TYPES:
       raise ValueError(f'Invalid action type: {self.action_type}')
     if self.index is not None:
       self.index = int(self.index)
+      if self.x is not None or self.y is not None:
+        raise ValueError('Either an index or a <x, y> should be provided.')
+    if self.element is not None:
+      self.element=str(self.element)
       if self.x is not None or self.y is not None:
         raise ValueError('Either an index or a <x, y> should be provided.')
     if self.direction and self.direction not in _SCROLL_DIRECTIONS:
