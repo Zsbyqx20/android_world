@@ -24,3 +24,5 @@ poetry.lock
 # PyCharm
 .idea
 **/proto/*.py
+debug/
+runs/

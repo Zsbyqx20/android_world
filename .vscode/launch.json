@@ -1,0 +1,75 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "RetroPlaylistDuration_Attack",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--tasks=RetroPlaylistDuration",
+                "--attack_config=debug/output/setting_d1_aclick.json"
+            ],
+        }, 
+        {
+            "name": "SimpleSmsReply_Attack",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--tasks=SimpleSmsReply",
+                "--attack_config=debug/output/setting_d2_aclick.json",
+                "--break_on_misleading_actions"
+            ],
+        }, 
+        {
+            "name": "MarkorDeleteAllNotes_Attack",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--tasks=MarkorDeleteAllNotes",
+                "--attack_config=debug/output/setting_d1_aclick.json"
+            ],
+        },        
+        {
+            "name": "MarkorDeleteNewestNote_Attack",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--tasks=MarkorDeleteNewestNote",
+                "--attack_config=debug/rules_attack_config.json"
+            ],
+        },
+        {
+            "name": "MarkorDeleteNewestNote_Safe",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--tasks=MarkorDeleteNewestNote",
+            ]
+        },
+        {
+            "name": "RecipeAddSingleRecipe_Attack",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "run.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--tasks=RecipeAddSingleRecipe",
+                "--enable_attack_wrapper=True",
+                "--attack_config=debug/aw_attack_targeted.json"
+            ]
+        }
+    ]
+}

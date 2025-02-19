@@ -1,7 +1,7 @@
 import json
 from pydantic import BaseModel, RootModel
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 EXTRAS_TEXT_PLACEHOLDER = "THIS IS A IMPOSSIBLE TEXT PLACEHOLDER"
 
@@ -25,6 +25,8 @@ class OverlayStyle(BaseModel):
     verticalAlign: str
     uiAutomatorCode: str
     padding: Padding
+    allow: Optional[list[str]] = None
+    deny: Optional[list[str]] = None
 
 
 class Rule(BaseModel):
