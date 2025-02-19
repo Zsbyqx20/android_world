@@ -97,7 +97,7 @@ _PATTERN_TO_ACTIVITY = immutabledict.immutabledict({
     'simple sms messenger|simple sms|sms messenger': 'com.simplemobiletools.smsmessenger/com.simplemobiletools.smsmessenger.activities.MainActivity',
     'dialer|phone': 'com.google.android.dialer/com.google.android.dialer.extensions.GoogleDialtactsActivity',
     'simple calendar pro|simple calendar|calendar': 'com.simplemobiletools.calendar.pro/com.simplemobiletools.calendar.pro.activities.MainActivity',
-    'simple gallery pro|simple gallery': 'com.simplemobiletools.gallery.pro/com.simplemobiletools.gallery.pro.activities.MainActivity',
+    'simple gallery pro|simple gallery|gallery': 'com.simplemobiletools.gallery.pro/com.simplemobiletools.gallery.pro.activities.MainActivity',
     'miniwob': 'com.google.androidenv.miniwob/com.google.androidenv.miniwob.app.MainActivity',
     'simple draw pro': 'com.simplemobiletools.draw.pro/com.simplemobiletools.draw.pro.activities.MainActivity',
     'pro expense|pro expense app': (
@@ -129,11 +129,11 @@ _ORIENTATIONS = {
 
 # Special app names that will trigger opening the default app.
 _DEFAULT_URIS: dict[str, str] = {
-    'calendar': 'content://com.android.calendar',
+    # 'calendar': 'content://com.android.calendar',
     'browser': 'http://',
     'contacts': 'content://contacts/people/',
     'email': 'mailto:',
-    'gallery': 'content://media/external/images/media/',
+    # 'gallery': 'content://media/external/images/media/',
 }
 
 
