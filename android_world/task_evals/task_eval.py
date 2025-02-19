@@ -23,6 +23,7 @@ from android_world.env import device_constants
 from android_world.env import interface
 from android_world.utils import app_snapshot
 from android_world.utils import datetime_utils
+from android_world.attack.wrapper import A11yAttackGrpcWrapper
 import jsonschema
 
 
@@ -38,10 +39,11 @@ class TaskEval(abc.ABC):
 
   start_on_home_screen = True
 
-  def __init__(self, params: dict[str, Any]):
+  def __init__(self, params: dict[str, Any], is_subtask: bool = False):
     self.initialized = False
     jsonschema.validate(params, self.schema)
     self._params = params
+    self._is_subtask = is_subtask
 
   @property
   @abc.abstractmethod
@@ -139,6 +141,9 @@ class TaskEval(abc.ABC):
     if self.initialized:
       raise RuntimeError(f"{self.name}.initialize_task() is already called.")
     self.initialized = True
+    if isinstance(env.controller._env, A11yAttackGrpcWrapper) and not self._is_subtask:
+      env.controller.set_current_task(self.name)
+      env.controller._env.start_service()
 
     # Set random seed for so that any random params initialized here are
     # deterministic when initialize_task is called again.
@@ -174,4 +179,6 @@ class TaskEval(abc.ABC):
     self._initialize_apps(env)
     adb_utils.close_recents(env.controller)
     self.initialized = False
+    if isinstance(env.controller._env, A11yAttackGrpcWrapper):
+      env.controller._env.reset_rules()
     logging.info("Tearing down %s", self.name)

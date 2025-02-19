@@ -31,6 +31,8 @@ from android_env.wrappers import base_wrapper
 from android_world.env import adb_utils
 from android_world.env import representation_utils
 from android_world.utils import file_utils
+from android_world.attack.models import load_attack_config, AttackConfig, AttackConfigExtras
+from android_world.attack.wrapper import A11yAttackGrpcWrapper
 import dm_env
 
 
@@ -131,6 +133,8 @@ class A11yMethod(enum.Enum):
   # From `uiautomator dump``.
   UIAUTOMATOR = 'uiautomator'
 
+  ATTACKER_APPLIER = 'attacker_applier'
+
 
 def apply_a11y_forwarder_app_wrapper(
     env: env_interface.AndroidEnvInterface, install_a11y_forwarding_app: bool
@@ -141,6 +145,17 @@ def apply_a11y_forwarder_app_wrapper(
       start_a11y_service=True,
       enable_a11y_tree_info=True,
       latest_a11y_info_only=True,
+  )
+
+
+def apply_attacker_applier_wrapper(
+    env: env_interface.AndroidEnvInterface, install_a11y_forwarding_app: bool, attack_config: dict[str, AttackConfig]
+) -> env_interface.AndroidEnvInterface:
+  return A11yAttackGrpcWrapper(
+      env,
+      latest_forest_only=True,
+      install_a11y_forwarding_app=install_a11y_forwarding_app,
+      attack_config=attack_config,
   )
 
 
@@ -159,13 +174,25 @@ class AndroidWorldController(base_wrapper.BaseWrapper):
       env: env_interface.AndroidEnvInterface,
       a11y_method: A11yMethod = A11yMethod.A11Y_FORWARDER_APP,
       install_a11y_forwarding_app: bool = True,
+      attack_config: str = "",
+      break_on_misleading_actions: bool = False,
   ):
     self._original_env = env
+    self._attack_config = cast(dict[str, AttackConfig], None)
+    self._misleading_truth = cast(AttackConfigExtras, None)
+    self._current_task = cast(str, None)
+    self._break_on_misleading_actions = break_on_misleading_actions
     if a11y_method == A11yMethod.A11Y_FORWARDER_APP:
       self._env = apply_a11y_forwarder_app_wrapper(
           env, install_a11y_forwarding_app
       )
       self._env.reset()  # Initializes required server services in a11y wrapper.
+    elif a11y_method == A11yMethod.ATTACKER_APPLIER:
+      self._attack_config = load_attack_config(attack_config)
+      self._env = apply_attacker_applier_wrapper(
+          env, install_a11y_forwarding_app, self._attack_config
+      )
+      self._env.reset()
     else:
       self._env = env
     self._a11y_method = a11y_method
@@ -226,6 +253,17 @@ class AndroidWorldController(base_wrapper.BaseWrapper):
           self.get_a11y_forest(),
           exclude_invisible_elements=True,
       )
+    elif self._a11y_method == A11yMethod.ATTACKER_APPLIER:
+      if not self._current_task:
+        raise RuntimeError("Current task is not set")
+      if self._current_task not in self._attack_config:
+        raise RuntimeError(f"Task {self._current_task} not found in attack config")
+      ac = self._attack_config[self._current_task]
+      if not isinstance(self._env, A11yAttackGrpcWrapper):
+        raise RuntimeError("Environment is not an instance of A11yAttackGrpcWrapper")
+      elements, truth = self._env.get_ui_elements(ac)
+      self._misleading_truth = truth
+      return elements
     else:
       return representation_utils.xml_dump_to_ui_elements(
           adb_utils.uiautomator_dump(self._env)
@@ -283,6 +321,17 @@ class AndroidWorldController(base_wrapper.BaseWrapper):
         timeout_sec,
     )
 
+  @property
+  def current_task(self):
+    """Returns the current task being executed."""
+    return self._current_task
+
+  def set_current_task(self, task: str):
+    """Sets the current task being executed."""
+    self._current_task = task
+    if hasattr(self._env, "set_current_task"):
+      self._env.set_current_task(task)
+
 
 def _write_default_task_proto() -> str:
   with open(_TASK_PATH, 'w') as f:
@@ -301,6 +350,8 @@ def get_controller(
     console_port: int = 5554,
     adb_path: str = DEFAULT_ADB_PATH,
     grpc_port: int = 8554,
+    attack_config: str = "",
+    break_on_misleading_actions: bool = False,
 ) -> AndroidWorldController:
   """Creates a controller by connecting to an existing Android environment."""
 
@@ -319,4 +370,9 @@ def get_controller(
   )
   android_env_instance = loader.load(config)
   logging.info('Setting up AndroidWorldController.')
-  return AndroidWorldController(android_env_instance)
+  return AndroidWorldController(
+      android_env_instance,
+      a11y_method=A11yMethod.ATTACKER_APPLIER if attack_config else A11yMethod.A11Y_FORWARDER_APP,
+      attack_config=attack_config,
+      break_on_misleading_actions=break_on_misleading_actions,
+  )

@@ -122,7 +122,7 @@ _CHECKPOINT_DIR = flags.DEFINE_string(
 )
 _OUTPUT_PATH = flags.DEFINE_string(
     'output_path',
-    os.path.expanduser('~/android_world/runs'),
+    os.path.expanduser('runs'),
     'The path to save results to if not resuming from a checkpoint is not'
     ' provided.',
 )
@@ -149,6 +149,18 @@ _MINIWOB_ADDITIONAL_GUIDELINES = [
     ),
 ]
 
+# Attack config.
+_ATTACK_CONFIG = flags.DEFINE_string(
+    'attack_config',
+    '',
+    'Path to JSON config file for attack wrapper.',
+)
+
+_BREAK_ON_MISLEADING_ACTIONS = flags.DEFINE_boolean(
+    'break_on_misleading_actions',
+    False,
+    'Whether to break on misleading actions.',
+)
 
 def _get_agent(
     env: interface.AsyncEnv,
@@ -172,9 +184,9 @@ def _get_agent(
     )
   # GPT.
   elif _AGENT_NAME.value == 't3a_gpt4':
-    agent = t3a.T3A(env, infer.Gpt4Wrapper('gpt-4-turbo-2024-04-09'))
+    agent = t3a.T3A(env, infer.Gpt4Wrapper('gpt-4o'))
   elif _AGENT_NAME.value == 'm3a_gpt4v':
-    agent = m3a.M3A(env, infer.Gpt4Wrapper('gpt-4-turbo-2024-04-09'))
+    agent = m3a.M3A(env, infer.Gpt4Wrapper('gpt-4o'))
   # SeeAct.
   elif _AGENT_NAME.value == 'seeact':
     agent = seeact.SeeAct(env)
@@ -200,6 +212,8 @@ def _main() -> None:
       console_port=_DEVICE_CONSOLE_PORT.value,
       emulator_setup=_EMULATOR_SETUP.value,
       adb_path=_ADB_PATH.value,
+      attack_config=_ATTACK_CONFIG.value,
+      break_on_misleading_actions=_BREAK_ON_MISLEADING_ACTIONS.value,
   )
 
   n_task_combinations = _N_TASK_COMBINATIONS.value
@@ -235,6 +249,7 @@ def _main() -> None:
       agent,
       checkpointer=checkpointer_lib.IncrementalCheckpointer(checkpoint_dir),
       demo_mode=False,
+      break_on_misleading_actions=_BREAK_ON_MISLEADING_ACTIONS.value,
   )
   print(
       f'Finished running agent {_AGENT_NAME.value} on {_SUITE_FAMILY.value}'

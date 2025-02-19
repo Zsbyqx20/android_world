@@ -414,6 +414,7 @@ def run(
     return_full_episode_data: bool = False,
     process_episodes_fn=None,
     check_episode_fn: Callable[[dict[str, Any]], bool] | None = None,
+    break_on_misleading_actions: bool = False,
 ) -> list[dict[str, Any]]:
   """Create suite and runs eval suite.
 
@@ -431,7 +432,7 @@ def run(
     process_episodes_fn: The function to process episode data. Usually to
       compute metrics. Deafaults to process_episodes from this file.
     check_episode_fn: The function to check episode data.
-
+    break_on_misleading_actions: Whether to break on misleading actions.
   Returns:
     Step-by-step data from each episode.
   """
@@ -449,6 +450,7 @@ def run(
             if task.name.lower().startswith('miniwob')
             else None
         ),
+        break_on_misleading_actions=break_on_misleading_actions,
     )
 
   if demo_mode:
@@ -663,6 +665,7 @@ def process_episodes(
           constants.EpisodeConstants.EXCEPTION_INFO, np.nan
       )
   })
+  df['is_misled'] = df.aux_data.apply(lambda x: x.get('is_misled', False) if x is not None else False)
 
   result_df = df.groupby(
       constants.EpisodeConstants.TASK_TEMPLATE, dropna=True
@@ -673,6 +676,7 @@ def process_episodes(
       constants.EpisodeConstants.EXCEPTION_INFO: [
           ('none_count', lambda x: x.notnull().sum())
       ],
+      "is_misled": [('num_misled_trials', lambda x: x.sum()), 'mean']
   })
   result_df = result_df.sort_index()
   result_df.columns = [
@@ -681,6 +685,8 @@ def process_episodes(
       'mean_episode_length',
       'total_runtime_s',
       'num_fail_trials',
+      'num_misled_trials',
+      'mean_misled_rate'
   ]
   result_df['total_runtime_s'] = result_df['total_runtime_s'].map(
       lambda x: float('{:.1f}'.format(x))

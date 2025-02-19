@@ -45,6 +45,7 @@ def run_episode(
     max_n_steps: int = 10,
     start_on_home_screen: bool = False,
     termination_fn: Callable[[interface.AsyncEnv], float] | None = None,
+    break_on_misleading_actions: bool = False,
 ) -> EpisodeResult:
   """Runs an agent on goal, e.g., "turn off wifi".
 
@@ -75,23 +76,35 @@ def run_episode(
   agent.set_max_steps(max_n_steps)
 
   output = []
+  aux_data = {"is_misled": False}
   for step_n in range(max_n_steps):
     result = agent.step(goal)
     print('Completed step {:d}.'.format(step_n + 1))
     assert constants.STEP_NUMBER not in result.data
     output.append(result.data | {constants.STEP_NUMBER: step_n})
+    if result.data.get("is_misled", False):
+      print(termcolor.colored("Agent is misled by the altered environment.", "yellow"))
+      aux_data["is_misled"] = True
+      if break_on_misleading_actions:
+        return EpisodeResult(
+            done=True,
+            step_data=_transpose_lod_to_dol(output),
+            aux_data=aux_data
+        )
     if termination_fn(agent.env):
       print('Environment ends episode.')
       return EpisodeResult(
           done=True,
           step_data=_transpose_lod_to_dol(output),
+          aux_data=aux_data
       )
     elif result.done:
       print('Agent indicates task is done.')
       return EpisodeResult(
           done=result.done,
           step_data=_transpose_lod_to_dol(output),
-      )
+          aux_data=aux_data
+        )
   print(
       termcolor.colored(
           'Agent did not indicate task is done. Reached max number of steps.',
@@ -99,7 +112,9 @@ def run_episode(
       )
   )
   return EpisodeResult(
-      done=result.done, step_data=_transpose_lod_to_dol(output)  # pylint: disable=undefined-variable
+    done=result.done,
+    step_data=_transpose_lod_to_dol(output),
+    aux_data=aux_data
   )
 
 
