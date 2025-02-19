@@ -258,6 +258,7 @@ class RetroPlaylistDuration(RetroCreatePlaylist):
     )
 
   def initialize_task(self, env: interface.AsyncEnv):
+    super().initialize_task(env)
     _clear_playlist_dbs(env)
 
     # Guarantee there is an answer.

@@ -63,6 +63,7 @@ class TaskRegistry:
   ANDROID_WORLD_FAMILY: Final[str] = 'android_world'  # Entire suite.
   ANDROID_FAMILY: Final[str] = 'android'  # Subset.
   INFORMATION_RETRIEVAL_FAMILY: Final[str] = 'information_retrieval'  # Subset.
+  ATTACK_FAMILY: Final[str] = 'attack'  # 新增的攻击任务系列
 
   # The MiniWoB family.
   MINIWOB_FAMILY: Final[str] = 'miniwob'
@@ -76,6 +77,7 @@ class TaskRegistry:
           information_retrieval.InformationRetrieval
       ](filename=get_information_retrieval_task_path()).registry
   )
+  ATTACK_TASK_REGISTRY = {}  # 新增的攻击任务注册表
 
   MINIWOB_TASK_REGISTRY = miniwob_registry.TASK_REGISTRY
 
@@ -95,6 +97,7 @@ class TaskRegistry:
       return {
           **self.ANDROID_TASK_REGISTRY,
           **self.INFORMATION_RETRIEVAL_TASK_REGISTRY,
+          **self.ATTACK_TASK_REGISTRY,  # 将攻击任务添加到全局注册表
       }
     elif family == self.ANDROID_FAMILY:
       return self.ANDROID_TASK_REGISTRY
@@ -104,6 +107,8 @@ class TaskRegistry:
       return miniwob_registry.TASK_REGISTRY_SUBSET
     elif family == self.INFORMATION_RETRIEVAL_FAMILY:
       return self.INFORMATION_RETRIEVAL_TASK_REGISTRY
+    elif family == self.ATTACK_FAMILY:  # 添加对新任务系列的支持
+      return self.ATTACK_TASK_REGISTRY
     else:
       raise ValueError(f'Unsupported family: {family}')
 
@@ -215,6 +220,48 @@ class TaskRegistry:
       # sms.SimpleSmsSendAfterCall,
   )
 
+  _ATTACK_TASKS = (
+    expense.ExpenseAddMultipleFromMarkor,
+    expense.ExpenseDeleteDuplicates,
+    expense.ExpenseDeleteDuplicates2,
+    expense.ExpenseDeleteMultiple,
+    expense.ExpenseDeleteMultiple2,
+    expense.ExpenseDeleteSingle,
+    markor.MarkorAddNoteHeader,
+    markor.MarkorCreateFolder,
+    markor.MarkorCreateNote,
+    markor.MarkorCreateNoteFromClipboard,
+    markor.MarkorDeleteAllNotes,
+    markor.MarkorDeleteNewestNote,
+    markor.MarkorDeleteNote,
+    markor.MarkorMergeNotes,
+    markor.MarkorMoveNote,
+    markor.MarkorTranscribeReceipt,
+    recipe.RecipeAddMultipleRecipes,
+    recipe.RecipeAddMultipleRecipesFromMarkor,
+    recipe.RecipeAddMultipleRecipesFromMarkor2,
+    recipe.RecipeAddSingleRecipe,
+    recipe.RecipeDeleteDuplicateRecipes,
+    recipe.RecipeDeleteDuplicateRecipes2,
+    recipe.RecipeDeleteDuplicateRecipes3,
+    recipe.RecipeDeleteMultipleRecipes,
+    recipe.RecipeDeleteMultipleRecipesWithConstraint,
+    recipe.RecipeDeleteMultipleRecipesWithNoise,
+    recipe.RecipeDeleteSingleRecipe,
+    recipe.RecipeDeleteSingleWithRecipeWithNoise,
+    retro_music.RetroCreatePlaylist,
+    retro_music.RetroPlayingQueue,
+    retro_music.RetroPlaylistDuration,
+    retro_music.RetroSavePlaylist,
+    sms.SimpleSmsReply,
+    sms.SimpleSmsReplyMostRecent,
+    sms.SimpleSmsResend,
+    sms.SimpleSmsSend,
+    sms.SimpleSmsSendClipboardContent,
+    sms.SimpleSmsSendReceivedAddress,
+    markor_sms.MarkorCreateNoteAndSms,
+  )
+
   def register_task(
       self, task_registry: dict[Any, Any], task_class: type[task_eval.TaskEval]
   ) -> None:
@@ -229,6 +276,10 @@ class TaskRegistry:
   def __init__(self):
     for task in self._TASKS:
       self.register_task(self.ANDROID_TASK_REGISTRY, task)
+    
+    # 注册攻击任务
+    for task in self._ATTACK_TASKS:
+      self.register_task(self.ATTACK_TASK_REGISTRY, task)
 
   # Add names with "." notation for autocomplete in Colab.
   names = types.SimpleNamespace(**{

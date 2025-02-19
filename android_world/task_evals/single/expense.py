@@ -349,6 +349,11 @@ class ExpenseAddMultipleFromMarkor(_ExpenseAddMultiple):
     random.shuffle(rows)
     file_utils.clear_directory(device_constants.MARKOR_DATA, env.controller)
     user_data_generation.write_to_markor(
+      "random words",
+      "zzzz_random_words.txt",
+      env,
+    )
+    user_data_generation.write_to_markor(
         _get_expense_rows_as_text(rows, 'csv'),
         'my_expenses.txt',
         env,
