@@ -33,6 +33,25 @@ class SimpleSmsSend(sms_validators.SimpleSMSSendSms):
       " {message}"
   )
 
+  def _generate_non_goal_message(self):
+    message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    while message == self.params["message"]:
+      message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    return message
+
+  def initialize_task(self, env: interface.AsyncEnv) -> None:
+    super().initialize_task(env)
+
+    # Disable notifications so we don't have to wait for them to disappear
+    # before running the task.
+    adb_utils.disable_headsup_notifications(env.controller)
+
+    for _ in range(random.randint(1, 3)):
+      adb_utils.text_emulator(
+          env.controller,
+          user_data_generation.generate_random_number(),
+          self._generate_non_goal_message(),
+      )
 
 class SimpleSmsSendAfterCall(sms_validators.SimpleSMSSendSms):
   """Task for checking an SMS was sent after a missed call.
@@ -118,31 +137,51 @@ class SimpleSmsReply(sms_validators.SimpleSMSSendSms):
   complexity = 1.2
   template = "Reply to {number} with message: {message} in Simple SMS Messenger"
 
+  def _generate_non_goal_message(self):
+    message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    while message == self.params["message"]:
+      message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    return message
+
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
     adb_utils.disable_headsup_notifications(env.controller)
 
     relevant_text_sent = False
+    message_count = random.randint(3, 5)  # 确保至少有3条消息
+    
+    # 添加随机数量的短信，目标短信随机插入其中，但确保不在第2条
+    for i in range(message_count):
+        if i == 1:  # 第2条消息
+            # 强制发送非目标短信
+            adb_utils.text_emulator(
+                env.controller,
+                user_data_generation.generate_random_number(),
+                self._generate_non_goal_message(),
+            )
+            time.sleep(1.0)  # 确保消息顺序
+            continue
+            
+        if not relevant_text_sent and i != 1:  # 不是第2条消息时才可能发送目标短信
+            if random.choice([True, False]):
+                adb_utils.text_emulator(
+                    env.controller,
+                    self.params["number"],
+                    random.choice(sms_validators.SimpleSMSSendSms.messages),
+                )
+                relevant_text_sent = True
+                time.sleep(1.0)  # 确保消息顺序
+                continue
 
-    # Add a random number of texts, with the text we care about randomly
-    # interspersed.
-    for _ in range(random.randint(1, 5)):
-      if not relevant_text_sent:
-        if random.choice([True, False]):
-          adb_utils.text_emulator(
-              env.controller,
-              self.params["number"],
-              random.choice(sms_validators.SimpleSMSSendSms.messages),
-          )
-          relevant_text_sent = True
-
-      adb_utils.text_emulator(
-          env.controller,
-          user_data_generation.generate_random_number(),
-          random.choice(sms_validators.SimpleSMSSendSms.messages),
-      )
+        adb_utils.text_emulator(
+            env.controller,
+            user_data_generation.generate_random_number(),
+            random.choice(sms_validators.SimpleSMSSendSms.messages),
+        )
+        time.sleep(1.0)  # 确保消息顺序
 
     if not relevant_text_sent:
+      time.sleep(2.0)
       adb_utils.text_emulator(
           env.controller,
           self.params["number"],
@@ -164,10 +203,26 @@ class SimpleSmsSendClipboardContent(sms_validators.SimpleSMSSendSms):
       " Messenger"
   )
 
+  def _generate_non_goal_message(self):
+    message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    while message == self.params["message"]:
+      message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    return message
+
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
     adb_utils.set_clipboard_contents(self.params["message"], env.controller)
 
+    # Disable notifications so we don't have to wait for them to disappear
+    # before running the task.
+    adb_utils.disable_headsup_notifications(env.controller)
+
+    for _ in range(random.randint(1, 3)):
+      adb_utils.text_emulator(
+          env.controller,
+          user_data_generation.generate_random_number(),
+          self._generate_non_goal_message(),
+      )
 
 class SimpleSmsSendReceivedAddress(sms_validators.SimpleSMSSendSms):
   """Task for checking that a received address is forward to someone else."""
@@ -200,6 +255,12 @@ class SimpleSmsSendReceivedAddress(sms_validators.SimpleSMSSendSms):
       "2021 Poplar St, Atlanta, GA, 30340",
   ]
 
+  def _generate_non_goal_message(self):
+    message = random.choice(self.addresses)
+    while message == self.params["message"]:
+      message = random.choice(self.addresses)
+    return message
+
   @classmethod
   def generate_random_params(cls) -> dict[str, str | int]:
     name1 = user_data_generation.generate_random_name()
@@ -225,12 +286,48 @@ class SimpleSmsSendReceivedAddress(sms_validators.SimpleSMSSendSms):
         self.params["name2"], name2_number, env.controller
     )
 
-    # Add text containing address from name2
-    adb_utils.text_emulator(
-        env.controller,
-        name2_number,
-        self.params["message"],
-    )
+    message_count = random.randint(3, 5)  # 确保至少有3条消息
+    goal_message_sent = False
+    
+    # 添加随机数量的短信，目标短信随机插入其中，但确保不在第2条
+    for i in range(message_count):
+        if i == 1:  # 第2条消息
+            # 强制发送非目标短信
+            adb_utils.text_emulator(
+                env.controller,
+                user_data_generation.generate_random_number(),
+                self._generate_non_goal_message(),
+            )
+            time.sleep(1.0)  # 确保消息顺序
+            continue
+            
+        if not goal_message_sent and i != 1:  # 不是第2条消息时才可能发送目标短信
+            if random.choice([True, False]):
+                adb_utils.text_emulator(
+                    env.controller,
+                    name2_number,  # 来自name2的消息
+                    self.params["message"],
+                )
+                goal_message_sent = True
+                time.sleep(1.0)  # 确保消息顺序
+                continue
+
+        adb_utils.text_emulator(
+            env.controller,
+            user_data_generation.generate_random_number(),
+            self._generate_non_goal_message(),
+        )
+        time.sleep(1.0)  # 确保消息顺序
+
+    # 如果目标短信还没有发送，则在最后发送
+    if not goal_message_sent:
+        # 暂停较长时间确保之前的消息都已处理
+        time.sleep(2.0)
+        adb_utils.text_emulator(
+            env.controller,
+            name2_number,  # 来自name2的消息
+            self.params["message"],
+        )
 
     # Need to pause to make sure re-enabling notifications happens after the
     # text came in
@@ -258,6 +355,12 @@ class SimpleSmsResend(sms_validators.SimpleSMSSendSms):
       "required": ["name", "number", "message"],
   }
 
+  def _generate_non_goal_message(self):
+    message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    while message == self.params["message"]:
+      message = random.choice(sms_validators.SimpleSMSSendSms.messages)
+    return message
+
   @classmethod
   def generate_random_params(cls) -> dict[str, str | int]:
     return {
@@ -271,11 +374,46 @@ class SimpleSmsResend(sms_validators.SimpleSMSSendSms):
     adb_utils.disable_headsup_notifications(env.controller)
     super().initialize_task(env)
 
+    # 添加联系人
     contacts_utils.add_contact(
         self.params["name"], self.params["number"], env.controller
     )
     time.sleep(3.0)
-    controller.send_sms(self.params["number"], self.params["message"])
+
+    message_count = random.randint(3, 5)  # 确保至少有3条消息
+    goal_message_sent = False
+    
+    # 添加随机数量的短信，目标短信随机插入其中，但确保不在第2条
+    for i in range(message_count):
+        if i == 1:  # 第2条消息
+            # 强制发送非目标短信
+            adb_utils.text_emulator(
+                env.controller,
+                user_data_generation.generate_random_number(),
+                self._generate_non_goal_message(),
+            )
+            time.sleep(1.0)  # 确保消息顺序
+            continue
+            
+        if not goal_message_sent and i != 1:  # 不是第2条消息时才可能发送目标短信
+            if random.choice([True, False]):
+                controller.send_sms(self.params["number"], self.params["message"])
+                goal_message_sent = True
+                time.sleep(1.0)  # 确保消息顺序
+                continue
+
+        adb_utils.text_emulator(
+            env.controller,
+            user_data_generation.generate_random_number(),
+            self._generate_non_goal_message(),
+        )
+        time.sleep(1.0)  # 确保消息顺序
+
+    # 如果目标短信还没有发送，则在最后发送
+    if not goal_message_sent:
+        # 暂停较长时间确保之前的消息都已处理
+        time.sleep(2.0)
+        controller.send_sms(self.params["number"], self.params["message"])
 
     # Make sure conversation happens before the repeat message
     time.sleep(3.0)
