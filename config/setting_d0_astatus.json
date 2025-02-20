@@ -22,7 +22,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -58,7 +60,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       },
       {
@@ -79,7 +83,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       }
     ],
@@ -116,7 +122,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -267,7 +275,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -341,7 +351,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -452,7 +464,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -525,7 +539,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       },
       {
@@ -546,7 +562,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       }
     ],
@@ -583,7 +601,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -660,7 +680,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -697,7 +719,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -733,7 +757,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -882,7 +908,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -1029,7 +1057,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       },
       {
@@ -1050,7 +1080,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       }
     ],
@@ -1124,7 +1156,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -1235,7 +1269,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -1272,7 +1308,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -1309,7 +1347,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       }
     ],
@@ -1384,7 +1424,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -1609,7 +1651,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -1683,7 +1727,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       },
       {
@@ -1704,7 +1750,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       }
     ],
@@ -1778,7 +1826,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       },
       {
@@ -1799,7 +1849,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"org.tasks:id/menu_voice_add\")"
+        ],
         "deny": []
       }
     ],
@@ -1873,7 +1925,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -1984,7 +2038,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -2022,7 +2078,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -2059,7 +2117,9 @@
           "bottom": 0.0
         },
         "allow": [],
-        "deny": []
+        "deny": [
+          ".text(\"Settings\")"
+        ]
       }
     ],
     "extras": {
@@ -2095,7 +2155,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -2132,7 +2194,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
@@ -2169,7 +2233,9 @@
           "right": 0.0,
           "bottom": 0.0
         },
-        "allow": [],
+        "allow": [
+          ".resourceId(\"net.gsantner.markor:id/nav_todo\")"
+        ],
         "deny": []
       }
     ],
