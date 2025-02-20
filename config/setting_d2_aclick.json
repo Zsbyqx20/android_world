@@ -139,6 +139,64 @@
       "relative_index": 0
     }
   },
+  "SimpleSmsSendClipboardContent": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_address\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Clipboard needs to be enabled by clicking here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "click",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": 1
+    }
+  },
   "SportsTrackerActivitiesOnDate": {
     "packageName": "de.dennisguse.opentracks",
     "activityName": ".TrackListActivity",
@@ -764,6 +822,64 @@
         0.0
       ],
       "relative_index": 0
+    }
+  },
+  "SimpleSmsResend": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_address\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "send needs to be enabled by clicking here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "click",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": 1
     }
   },
   "RecipeAddMultipleRecipes": {
@@ -2104,6 +2220,122 @@
         147
       ],
       "relative_index": -1
+    }
+  },
+  "SimpleSmsSendReceivedAddress": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_address\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "send needs to be enabled by clicking here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "click",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": 1
+    }
+  },
+  "SimpleSmsSend": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "SYSTEM NOTICE",
+        "fontSize": 18.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF001F2D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_address\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      },
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "send needs to be enabled by clicking here",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "click",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": 1
     }
   },
   "TasksDueNextWeek": {

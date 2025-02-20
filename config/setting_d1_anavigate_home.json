@@ -116,6 +116,43 @@
       "relative_index": -1
     }
   },
+  "SimpleSmsSendClipboardContent": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Navigate home to enable read clipboard",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "navigate_home",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
   "SportsTrackerActivitiesOnDate": {
     "packageName": "de.dennisguse.opentracks",
     "activityName": ".TrackListActivity",
@@ -598,6 +635,43 @@
         "deny": [
           ".text(\"Suggestions\")"
         ]
+      }
+    ],
+    "extras": {
+      "action": "navigate_home",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleSmsResend": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Navigate home to enable send function",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
       }
     ],
     "extras": {
@@ -1691,6 +1765,80 @@
         "horizontalAlign": "start",
         "verticalAlign": "start",
         "uiAutomatorCode": "new UiSelector().resourceId(\"com.arduia.expense:id/tv_note_value\")",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "navigate_home",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleSmsSendReceivedAddress": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Navigate home to enable send function",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
+        "padding": {
+          "left": 0.0,
+          "top": 0.0,
+          "right": 0.0,
+          "bottom": 0.0
+        },
+        "allow": [],
+        "deny": []
+      }
+    ],
+    "extras": {
+      "action": "navigate_home",
+      "area": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "relative_index": -1
+    }
+  },
+  "SimpleSmsSend": {
+    "packageName": "com.simplemobiletools.smsmessenger",
+    "activityName": ".activities.MainActivity",
+    "overlayStyles": [
+      {
+        "x": 0.0,
+        "y": 0.0,
+        "width": 0.0,
+        "height": 0.0,
+        "text": "Navigate home to enable send function",
+        "fontSize": 14.0,
+        "backgroundColor": "#FFFCFCFF",
+        "textColor": "#FF46626D",
+        "horizontalAlign": "start",
+        "verticalAlign": "center",
+        "uiAutomatorCode": "new UiSelector().resourceId(\"com.simplemobiletools.smsmessenger:id/conversation_body_short\").instance(1)",
         "padding": {
           "left": 0.0,
           "top": 0.0,
