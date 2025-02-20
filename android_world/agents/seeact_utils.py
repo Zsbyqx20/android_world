@@ -312,7 +312,7 @@ def execute_openai_request(
     The response from the OpenAI API as a dictionary.
   """
   api_key = os.environ["OPENAI_API_KEY"]
-  base_url = os.environ["OPENAI_BASE_URL"]
+  base_url = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1/chat/completions")
   headers = {
       "Content-Type": "application/json",
       "Authorization": f"Bearer {api_key}",
@@ -325,7 +325,7 @@ def execute_openai_request(
   }
 
   response = requests.post(
-      f"{base_url}/v1/chat/completions",
+      base_url,
       headers=headers,
       json=payload,
   )
