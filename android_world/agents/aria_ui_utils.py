@@ -16,7 +16,7 @@ import base64
 from io import BytesIO
 import requests
 from PIL import Image
-from openai import OpenAI
+# from openai import OpenAI
 import numpy as np
 import cv2
 import os
@@ -25,13 +25,13 @@ from android_world.agents.m3a_utils import _logical_to_physical
 """
 Deploy Aria-UI with vLLM, then get the api_key and api_base from the deployment for directly API call.
 """
-ariaui_api_key = os.environ["OPENAI_API_KEY"]
-ariaui_api_base = os.environ['OPENAI_BASE_URL']+"/v1"
+# ariaui_api_key = os.environ["OPENAI_API_KEY"]
+# ariaui_api_base = os.environ['OPENAI_BASE_URL']+"/v1"
 
-client = OpenAI(
-    api_key=ariaui_api_key,
-    base_url=ariaui_api_base,
-)
+# client = OpenAI(
+#     api_key=ariaui_api_key,
+#     base_url=ariaui_api_base,
+# )
 
 # models = client.models.list()
 # model = models.data[0].id
