@@ -20,10 +20,12 @@ from android_world.agents import agent_utils
 from android_world.agents import base_agent
 from android_world.agents import infer
 from android_world.agents import m3a_utils
+from android_world.attack.nodes import capture_action
 from android_world.env import adb_utils
 from android_world.env import interface
 from android_world.env import json_action
 from android_world.env import representation_utils
+from android_world.env.android_world_controller import A11yMethod
 
 PROMPT_PREFIX = (
     'You are an agent who can operate an Android phone on behalf of a user.'
@@ -429,7 +431,25 @@ Action: {{"action_type": "status", "goal_status": "infeasible"}}"""
           False,
           step_data,
       )
-
+    action_index = converted_action.index
+    if self.env.controller._a11y_method == A11yMethod.ATTACKER_APPLIER and converted_action.action_type:
+      extras = {}
+      if action_index is not None and len(ui_elements) > int(action_index):
+        extras["bbox"] = ui_elements[int(action_index)].bbox_pixels
+      if converted_action.action_type == 'status':
+        extras["status"] = converted_action.goal_status
+      matched = capture_action(
+        converted_action.action_type, 
+        self.env.controller._misleading_truth,
+        **extras
+      )
+      if matched:
+        step_data['summary'] = "Action is captured by the attack"
+        self.is_misled = True
+        step_data['is_misled'] = True
+        print("Action is captured by the attack")
+        if self.env.controller._break_on_misleading_actions:
+          return base_agent.AgentInteractionResult(True, step_data)
     if converted_action.action_type in ['click', 'long-press', 'input-text']:
       if converted_action.index is not None and converted_action.index >= len(
           ui_elements
