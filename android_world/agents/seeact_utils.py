@@ -35,7 +35,7 @@ import PIL
 import requests
 
 # OpenAI model used for these experiments.
-_GPT_TURBO = "gpt-4-turbo-2024-04-09"
+_GPT_TURBO = "gpt-4o"
 
 VALID_ACTIONS = {
     "CLICK",
