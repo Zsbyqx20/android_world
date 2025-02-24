@@ -23,6 +23,7 @@ import io
 import os
 import re
 import string
+import time
 from typing import Any
 from absl import logging
 from android_world.agents import infer
@@ -323,14 +324,30 @@ def execute_openai_request(
       "temperature": temperature,
       "max_tokens": max_tokens,
   }
-
-  response = requests.post(
-      base_url,
-      headers=headers,
-      json=payload,
-  )
-
-  return response.json()
+  max_retries = 3
+  wait_seconds = 5
+  while max_retries > 0:
+    try:
+      response = requests.post(
+        base_url,
+        headers=headers,
+        json=payload,
+      )
+      if response.ok and 'choices' in response.json():
+        return response.json()
+      print(
+            'Error calling OpenAI API with error message: '
+            + response.json()['error']['message']
+        )
+      time.sleep(wait_seconds)
+      wait_seconds *= 2
+    except Exception as e:
+      time.sleep(wait_seconds)
+      wait_seconds *= 2
+      max_retries -= 1
+      print('Error calling LLM, will retry soon...')
+      print(e)
+  return "Error calling LLM"
 
 
 @dataclasses.dataclass(frozen=True)
