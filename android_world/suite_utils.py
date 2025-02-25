@@ -472,7 +472,7 @@ def run(
       process_episodes_fn=process_episodes_fn,
       check_episode_fn=check_episode_fn,
   )
-
+  process_episodes(results, print_summary=True)
   return results
 
 
