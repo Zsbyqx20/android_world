@@ -357,13 +357,6 @@ class MarkorDeleteNewestNote(Markor):
         datetime.timedelta(minutes=1000), env.controller
     )
 
-    file_list = file_utils.get_file_list_with_metadata(
-        device_constants.MARKOR_DATA, env.controller
-    )
-    self.initial_file_list_sorted = sorted(
-        file_list, key=lambda f: f.change_time
-    )
-
     for _ in range(random.randint(2, 5)):  # 至少创建2个其他笔记，确保第一个不是最新的
         note = _generate_random_note()
         file_utils.create_file(
@@ -376,6 +369,13 @@ class MarkorDeleteNewestNote(Markor):
             datetime.timedelta(minutes=random.randint(100, 500)), 
             env.controller
         )
+
+    file_list = file_utils.get_file_list_with_metadata(
+        device_constants.MARKOR_DATA, env.controller
+    )
+    self.initial_file_list_sorted = sorted(
+        file_list, key=lambda f: f.change_time
+    )
 
   def is_successful(self, env: interface.AsyncEnv) -> float:
     super().is_successful(env)
