@@ -87,6 +87,9 @@ class MarkorMoveNote(Markor):
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
     self.move_file_task.initialize_task(env)
+    datetime_utils.advance_system_time(
+        datetime.timedelta(minutes=1000), env.controller
+    )
     first_note = _generate_random_note(leading_char="0_")
     while first_note.name == self.params["file_name"]:  # 确保不是目标文件名
         first_note = _generate_random_note(leading_char="0_")
