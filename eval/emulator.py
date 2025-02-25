@@ -124,7 +124,8 @@ class EmulatorManager:
             self.emulator_path,
             "-avd", self.emulator_name,
             "-no-audio",
-            "-grpc", "8554"
+            "-grpc", "8554",
+            "-gpu","host"
         ]
 
         # 根据snapshot配置添加相应的参数
@@ -142,7 +143,7 @@ class EmulatorManager:
                     cmd,
                     stdout=devnull,
                     stderr=devnull,
-                    preexec_fn=os.setpgrp,
+                    # preexec_fn=os.setpgrp,
                     start_new_session=True
                 )
             logger.info(f"模拟器启动中，进程ID: {self.process.pid}")
