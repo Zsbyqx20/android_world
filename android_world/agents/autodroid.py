@@ -332,12 +332,14 @@ class Autodroid(base_agent.EnvironmentInteractingAgent):
     super().__init__(env, name)
     self.llm = llm
     self.history = []
+    self.is_misled = False
     self.additional_guidelines = None
 
   def reset(self, go_home_on_reset: bool = False):
     super().reset(go_home_on_reset)
     # self.env.hide_automation_ui()
     self.history = []
+    self.is_misled = False 
 
   def set_task_guidelines(self, task_guidelines: list[str]) -> None:
     self.additional_guidelines = task_guidelines
@@ -353,6 +355,7 @@ class Autodroid(base_agent.EnvironmentInteractingAgent):
         'action_raw_response': None,
         # 'summary_prompt': None,
         'summary': None,
+        'is_misled': self.is_misled,
         # 'summary_raw_response': None,
     }
     print('----------step ' + str(len(self.history) + 1))
