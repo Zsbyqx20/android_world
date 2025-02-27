@@ -125,7 +125,8 @@ class EmulatorManager:
             self.emulator_path,
             "-avd", self.emulator_name,
             "-no-audio",
-            "-grpc", "8554"
+            "-grpc", "8554",
+            "-gpu","host"
         ]
 
         # 根据snapshot配置添加相应的参数

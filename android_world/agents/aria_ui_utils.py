@@ -16,7 +16,7 @@ import base64
 from io import BytesIO
 import requests
 from PIL import Image
-from openai import OpenAI
+# from openai import OpenAI
 import numpy as np
 import cv2
 import os
@@ -25,16 +25,16 @@ from android_world.agents.m3a_utils import _logical_to_physical
 """
 Deploy Aria-UI with vLLM, then get the api_key and api_base from the deployment for directly API call.
 """
-ariaui_api_key = os.environ["OPENAI_API_KEY"]
-ariaui_api_base = "https://api.apikey.vip/v1"
+# ariaui_api_key = os.environ["OPENAI_API_KEY"]
+# ariaui_api_base = os.environ['OPENAI_BASE_URL']+"/v1"
 
-client = OpenAI(
-    api_key=ariaui_api_key,
-    base_url=ariaui_api_base,
-)
+# client = OpenAI(
+#     api_key=ariaui_api_key,
+#     base_url=ariaui_api_base,
+# )
 
-models = client.models.list()
-model = models.data[0].id
+# models = client.models.list()
+# model = models.data[0].id
 
 def encode_image_to_base64(image_path):
     pil_image = Image.open(image_path).convert('RGB')
@@ -88,37 +88,37 @@ def my_request(image: np.ndarray, prompt: str) -> str:
     print(f"Chat completion output:{response.json()}")
     return response.json()
 
-def request_aria_ui(image: np.ndarray, prompt: str) -> str:
-    image_base64 = encode_numpy_image_to_base64(image)
-    chat_completion_from_url = client.chat.completions.create(
-        messages=[{
-            "role":
-            "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": prompt
-                },
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/jpeg;base64,{image_base64}"
-                    },
-                },
-            ],
-        }],
-        model=model,
-        max_tokens=512,
-        stop=["<|im_end|>"],
-        extra_body= {
-            "split_image": True,
-            "image_max_size": 980
-        }
-    )
+# def request_aria_ui(image: np.ndarray, prompt: str) -> str:
+#     image_base64 = encode_numpy_image_to_base64(image)
+#     chat_completion_from_url = client.chat.completions.create(
+#         messages=[{
+#             "role":
+#             "user",
+#             "content": [
+#                 {
+#                     "type": "text",
+#                     "text": prompt
+#                 },
+#                 {
+#                     "type": "image_url",
+#                     "image_url": {
+#                         "url": f"data:image/jpeg;base64,{image_base64}"
+#                     },
+#                 },
+#             ],
+#         }],
+#         model=model,
+#         max_tokens=512,
+#         stop=["<|im_end|>"],
+#         extra_body= {
+#             "split_image": True,
+#             "image_max_size": 980
+#         }
+#     )
 
-    result = chat_completion_from_url.choices[0].message.content
-    print(f"Chat completion output:{result}")
-    return result
+#     result = chat_completion_from_url.choices[0].message.content
+#     print(f"Chat completion output:{result}")
+#     return result
 
 
 def add_ui_element_mark_coords(

@@ -12,10 +12,13 @@ from android_world.agents import base_agent
 from android_world.agents import infer
 
 # from android_world.agents import m3a_utils
+from android_world.attack.nodes import capture_action
 from android_world.env import interface
 from android_world.env import json_action
 from android_world.env import representation_utils
 import re
+
+from android_world.env.android_world_controller import A11yMethod
 
 
 def image2PIL(image: np.ndarray) -> Image:
@@ -222,16 +225,17 @@ class CogAgent(base_agent.EnvironmentInteractingAgent):
     ):
         super().__init__(env, name)
         from gradio_client import Client
-
         self.model = Client("http://127.0.0.1:7890/")
         # self.model=None
         self.history = []
         self.wait_after_action_seconds = wait_after_action_seconds
+        self.is_misled=False
 
     def reset(self, go_home_on_reset: bool = False):
         super().reset(go_home_on_reset)
         # Hide the coordinates on screen which might affect the vision model.
         self.env.hide_automation_ui()
+        self.is_misled=False
         self.history = []
 
     def step(self, goal: str) -> base_agent.AgentInteractionResult:
@@ -241,6 +245,7 @@ class CogAgent(base_agent.EnvironmentInteractingAgent):
             "raw_response": None,
             "action": None,
             "step": None,
+            "is_misled":self.is_misled
         }
         # Get the current state.
         print("----------step " + str(len(self.history) + 1))
@@ -298,6 +303,28 @@ class CogAgent(base_agent.EnvironmentInteractingAgent):
             )
         else:
             converted_action = json_action.JSONAction(**result_action)
+        if (
+            self.env.controller._a11y_method == A11yMethod.ATTACKER_APPLIER
+            and converted_action.action_type
+        ):
+            extras = {}
+            if "box" in operation:
+                a, b, c, d = operation["box"]
+                w,h=self.env.logical_screen_size
+                a,b,c,d = int(a/1000*w),int(b/1000*h),int(c/1000*w),int(d/1000*h)
+                extras["bbox"] = representation_utils.BoundingBox(a, c, b, d)
+            matched = capture_action(
+                converted_action.action_type,
+                self.env.controller._misleading_truth,
+                **extras,
+            )
+            if matched:
+                step_data['summary'] = "Action is captured by the attack"
+                self.is_misled = True
+                step_data['is_misled'] = True
+                print("Action is captured by the attack")
+                if self.env.controller._break_on_misleading_actions:
+                    return base_agent.AgentInteractionResult(True, step_data)                   
         self.env.execute_action(converted_action)
         time.sleep(self.wait_after_action_seconds)
         self.history.append(step_data)

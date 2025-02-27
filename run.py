@@ -198,7 +198,7 @@ def _get_agent(
   elif _AGENT_NAME.value == 'ariaui':
     agent = m3a_aria_ui.Ariaui(env,infer.Gpt4Wrapper('gpt-4o'))
   elif _AGENT_NAME.value == 'UGround':
-    agent = seeact_v.SeeAct_V(env, infer.Gpt4Wrapper('gpt-4o-mini'),grounding_model_name="UGround-V1-7B")
+    agent = seeact_v.SeeAct_V(env, infer.Gpt4Wrapper('gpt-4o'),grounding_model_name="UGround-V1-7B")
   if not agent:
     raise ValueError(f'Unknown agent: {_AGENT_NAME.value}')
 
