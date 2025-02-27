@@ -23,7 +23,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -290,7 +290,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -366,7 +366,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -479,7 +479,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -709,7 +709,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -748,7 +748,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -937,7 +937,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -1430,7 +1430,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -2112,7 +2112,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
@@ -2151,7 +2151,7 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Settings\")"
+          ".resourceId(\"com.flauschcode.broccoli:id/nav_view\")"
         ]
       }
     ],
