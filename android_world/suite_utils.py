@@ -713,7 +713,7 @@ def process_episodes(
 
     # Add a chart that shows mean success rate by tag and difficulty.
     tags_df = _print_results_by_tag(tagged_result_df)
-    pd.set_option('display.precision', 2)
+    pd.set_option('display.precision', 3)
     print(f'\n\n{tags_df}')
 
   return tagged_result_df
