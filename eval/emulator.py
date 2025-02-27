@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 import time
 from .utils import setup_logger
 
@@ -18,7 +19,7 @@ class EmulatorManager:
         self.sdk_path = (
             sdk_path or 
             os.environ.get("ANDROID_HOME") or 
-            os.path.expanduser("~/Library/Android/sdk")
+            os.path.expanduser("~/Library/Android/Sdk")
         )
         self.emulator_path = os.path.join(self.sdk_path, "emulator/emulator")
         self.process = None
@@ -139,13 +140,23 @@ class EmulatorManager:
 
         try:
             with open(os.devnull, 'w') as devnull:
-                self.process = subprocess.Popen(
-                    cmd,
-                    stdout=devnull,
-                    stderr=devnull,
-                    # preexec_fn=os.setpgrp,
-                    start_new_session=True
-                )
+                if sys.platform == 'darwin':
+                    self.process = subprocess.Popen(
+                        cmd,
+                        stdout=devnull,
+                        stderr=devnull,
+                        preexec_fn=os.setpgrp,
+                        start_new_session=True
+                    )
+                elif sys.platform == 'linux':
+                    self.process = subprocess.Popen(
+                        cmd,
+                        stdout=devnull,
+                        stderr=devnull,
+                        start_new_session=True
+                    )
+                else:
+                    raise NotImplementedError(f"不支持的平台: {sys.platform}")
             logger.info(f"模拟器启动中，进程ID: {self.process.pid}")
             if self.snapshot_name is not None:
                 logger.info(f"正在加载快照: {self.snapshot_name}")
