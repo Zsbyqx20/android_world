@@ -432,6 +432,9 @@ class Evaluator(multiprocessing.Process):
     def save_stats(self):
         """保存统计结果到parquet文件，合并已有结果"""
         try:
+            # 确保父目录存在
+            os.makedirs(os.path.dirname(self.stats_file), exist_ok=True)
+            
             # 读取已有的统计结果
             existing_stats = None
             if os.path.exists(self.stats_file):

@@ -26,3 +26,4 @@ poetry.lock
 **/proto/*.py
 debug/
 runs/
+checkpoints/
