@@ -44,17 +44,17 @@ class ColoredFormatter(logging.Formatter):
 def setup_logger():
     """设置全局日志配置"""
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     
     # 清除现有的处理器
     logger.handlers = []
     
     # 创建控制台处理器
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
+    console_handler.setLevel(logging.DEBUG)
     
     # 设置彩色格式化器
-    formatter = ColoredFormatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')  # 添加时间格式
+    formatter = ColoredFormatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')  # 添加时间格式
     console_handler.setFormatter(formatter)
     
     logger.addHandler(console_handler)

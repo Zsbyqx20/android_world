@@ -27,3 +27,5 @@ poetry.lock
 debug/
 runs/
 checkpoints/
+scripts/
+logs/

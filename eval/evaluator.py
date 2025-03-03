@@ -8,12 +8,114 @@ import logging
 import pandas as pd
 from datetime import datetime
 from typing import Any
+import signal
+import errno
 
 from .utils import ImmediateFileHandler
 from .utils import setup_logger
 
+# 安全组件类
+class SafeQueue:
+    """安全的队列封装，提供可靠的进程间通信"""
+    def __init__(self):
+        self.queue = multiprocessing.Queue()
+        self.lock = multiprocessing.Lock()
+        self.put_event = multiprocessing.Event()
+    
+    def safe_put(self, item, timeout=None):
+        with self.lock:
+            try:
+                self.queue.put(item, timeout=timeout)
+                self.put_event.set()
+                return True
+            except Exception:
+                return False
+    
+    def safe_get(self, timeout=None):
+        try:
+            return self.queue.get(timeout=timeout)
+        except Exception:
+            return None
+
+class SafeFileHandler:
+    """安全的文件操作处理器"""
+    def __init__(self, filename):
+        self.filename = filename
+        self.lock = multiprocessing.Lock()
+        self.temp_file = f"{filename}.tmp"
+    
+    def safe_save(self, data_frame):
+        """安全地保存数据，添加详细的日志输出"""
+        with self.lock:
+            logger.debug(f"开始安全保存操作 - 目标文件: {self.filename}")
+            logger.debug(f"临时文件路径: {self.temp_file}")
+            logger.debug(f"当前工作目录: {os.getcwd()}")
+            
+            # 检查目录权限
+            target_dir = os.path.dirname(self.filename) or '.'
+            
+            logger.debug(f"目标目录权限检查: {target_dir}")
+            logger.debug(f"- 目录存在: {os.path.exists(target_dir)}")
+            logger.debug(f"- 可写入: {os.access(target_dir, os.W_OK)}")
+            
+            try:
+                # 确保目录存在
+                os.makedirs(target_dir, exist_ok=True)
+                logger.debug("目标目录创建/确认成功")
+                
+                # 保存到临时文件
+                logger.debug(f"开始写入临时文件: {self.temp_file}")
+                data_frame.to_parquet(self.temp_file)
+                logger.debug("临时文件写入成功")
+                
+                # 检查临时文件
+                if not os.path.exists(self.temp_file):
+                    raise FileNotFoundError(f"临时文件创建失败: {self.temp_file}")
+                logger.debug(f"临时文件大小: {os.path.getsize(self.temp_file)} bytes")
+                
+                # 原子性重命名
+                logger.debug(f"开始重命名临时文件到目标文件: {self.filename}")
+                os.replace(self.temp_file, self.filename)
+                logger.debug("文件重命名成功")
+                
+                return True
+                
+            except Exception as e:
+                logger.error(f"保存操作失败: {str(e)}")
+                logger.error(f"异常类型: {type(e).__name__}")
+                logger.error(f"异常详情: {str(e)}")
+                import traceback
+                logger.error(f"异常堆栈: \n{traceback.format_exc()}")
+                
+                if os.path.exists(self.temp_file):
+                    try:
+                        os.remove(self.temp_file)
+                        logger.debug("临时文件清理成功")
+                    except Exception as cleanup_error:
+                        logger.error(f"临时文件清理失败: {str(cleanup_error)}")
+                return False
+
+class StateManager:
+    """状态管理器，处理进程状态同步"""
+    def __init__(self):
+        self.state_lock = multiprocessing.Lock()
+        self.save_complete = multiprocessing.Event()
+        self.shutdown_flag = multiprocessing.Event()
+    
+    def signal_save_complete(self):
+        self.save_complete.set()
+    
+    def wait_for_save_complete(self, timeout=None):
+        return self.save_complete.wait(timeout=timeout)
+    
+    def request_shutdown(self):
+        self.shutdown_flag.set()
+    
+    def should_shutdown(self):
+        return self.shutdown_flag.is_set()
 
 logger = setup_logger()
+logger.setLevel(logging.DEBUG)  # 设置为DEBUG级别以显示所有日志
 TOTAL_TIMEOUT = 20 * 60
 IDLE_TIMEOUT = 5 * 60
 
@@ -33,10 +135,18 @@ class Evaluator(multiprocessing.Process):
         super().__init__()
         self.config_file = config_file
         self.log_dir = log_dir
-        self.status_queue = status_queue
+        # 使用安全队列替换原始队列
+        self._raw_status_queue = status_queue
+        self.status_queue = SafeQueue()
         self.n_trials = n_trials
         self.max_retries = max_retries
         self.agent_name = agent_name
+        # 添加状态管理器
+        self.state_manager = StateManager()
+        # 添加文件处理器
+        self.stats_file = os.path.join(".", checkpoint_file or "task_stats.parquet")
+        self.file_handler = SafeFileHandler(self.stats_file)
+        
         # 记录每个任务的重试次数和连续失败次数
         self.retry_counts = {}
         self.consecutive_failures = 0
@@ -44,8 +154,10 @@ class Evaluator(multiprocessing.Process):
         # 确保日志目录存在
         os.makedirs(self.log_dir, exist_ok=True)
         
+        # 添加进程管理
+        self.current_process = None
+        
         # 读取已有的统计结果
-        self.stats_file = os.path.join(".", checkpoint_file or "task_stats.parquet")
         existing_stats = None
         if os.path.exists(self.stats_file):
             try:
@@ -139,6 +251,54 @@ class Evaluator(multiprocessing.Process):
         )
         self.completed_tasks = 0
         self.start_time = None
+
+    def safe_exit(self, code=0):
+        """统一的安全退出流程"""
+        if self.state_manager.shutdown_flag.is_set():
+            logger.debug("已经在进行退出流程...")
+            return
+            
+        logger.info("开始安全退出流程...")
+        self.state_manager.request_shutdown()
+        
+        # 清理当前运行的子进程
+        if self.current_process:
+            try:
+                logger.debug("正在终止子进程...")
+                self.current_process.terminate()
+                self.current_process.wait(timeout=5)
+            except Exception as _:
+                try:
+                    logger.debug("强制终止子进程...")
+                    self.current_process.kill()
+                except Exception as _:
+                    pass
+        
+        # 保存状态
+        if not self.state_manager.save_complete.is_set():
+            logger.debug("保存最终状态...")
+            self.save_stats()
+        
+        # 清理队列资源
+        try:
+            logger.debug("清理队列资源...")
+            self.status_queue.queue.close()
+            self.status_queue.queue.join_thread()
+        except Exception as _:
+            pass
+        
+        logger.info("安全退出完成")
+        os._exit(code)
+
+    def _setup_signal_handlers(self):
+        """设置信号处理器"""
+        def handle_interrupt(signum, frame):
+            logger.info(f"收到中断信号 {signum}，准备安全关闭...")
+            self.safe_exit(0)
+        
+        # 在子进程中设置信号处理器
+        signal.signal(signal.SIGINT, handle_interrupt)
+        signal.signal(signal.SIGTERM, handle_interrupt)
 
     def has_pending_tasks(self) -> bool:
         """检查是否有待执行的任务"""
@@ -265,16 +425,6 @@ class Evaluator(multiprocessing.Process):
 
     def run_task(self, task, is_retry=False):
         """执行单个任务"""
-        # 检查是否已经完成足够的试验次数
-        current_trials = (
-            int(self.task_stats.at[task, 'success_rate'].split('/')[-1])
-            if pd.notna(self.task_stats.at[task, 'success_rate'])
-            else 0
-        )
-        if current_trials >= self.n_trials:
-            logger.info(f"任务 {task} 已完成足够的试验次数 ({current_trials}/{self.n_trials})")
-            return True
-
         task_logger = self.get_task_logger(task)
         retry_msg = "重试" if is_retry else "开始"
         # 添加执行边界标记
@@ -296,35 +446,42 @@ class Evaluator(multiprocessing.Process):
             ]
             
             # 使用Popen启动进程，并设置管道
-            process = subprocess.Popen(
+            self.current_process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 bufsize=1,  # 使用行缓冲
-                universal_newlines=True
+                universal_newlines=True,
+                start_new_session=True  # 创建新的进程组
             )
             
             import select
             
             start_time = time.time()  # 记录任务开始时间
             last_output_time = time.time()  # 记录最后一次输出的时间
-            outputs = [process.stdout, process.stderr]
+            outputs = [self.current_process.stdout, self.current_process.stderr]
             
             while outputs:
                 current_time = time.time()
                 # 检查总执行时间是否超时
                 if current_time - start_time > TOTAL_TIMEOUT:
-                    process.kill()
+                    self.current_process.terminate()
                     raise TimeoutError(f"任务总执行时间超过限制（{TOTAL_TIMEOUT}秒）")
                 
                 # 检查是否超过单步响应时间
                 if current_time - last_output_time > IDLE_TIMEOUT:
-                    process.kill()
+                    self.current_process.terminate()
                     raise TimeoutError(f"任务执行步骤超时（{IDLE_TIMEOUT}秒无输出）")
                 
-                # 使用select等待输出就绪，设置较短的超时以便定期检查超时
-                readable, _, _ = select.select(outputs, [], [], 0.1)
+                try:
+                    # 使用select等待输出就绪，设置较短的超时以便定期检查超时
+                    readable, _, _ = select.select(outputs, [], [], 0.1)
+                except (select.error, IOError) as e:
+                    # 在Linux上，如果进程被信号中断，select可能会抛出异常
+                    if e.args[0] != errno.EINTR:  # 忽略EINTR错误
+                        raise
+                    continue
                 
                 for output in readable:
                     line = output.readline()
@@ -336,7 +493,7 @@ class Evaluator(multiprocessing.Process):
                     last_output_time = time.time()
                     
                     # 根据输出类型选择日志级别
-                    if output == process.stdout:
+                    if output == self.current_process.stdout:
                         task_logger.info(line.rstrip())
                     else:
                         task_logger.warning(line.rstrip())
@@ -352,14 +509,18 @@ class Evaluator(multiprocessing.Process):
                         execution_error = True
                 
                 # 检查进程是否结束
-                if process.poll() is not None:
+                if self.current_process.poll() is not None:
                     break
             
             # 等待进程结束并获取返回码，设置较短的超时时间
             try:
-                return_code = process.wait(timeout=30)  # 给进程30秒时间来完成清理工作
+                return_code = self.current_process.wait(timeout=30)  # 给进程30秒时间来完成清理工作
             except subprocess.TimeoutExpired:
-                process.kill()
+                self.current_process.terminate()
+                try:
+                    self.current_process.wait(timeout=5)  # 再给5秒完成终止
+                except subprocess.TimeoutExpired:
+                    self.current_process.kill()  # 强制终止
                 raise TimeoutError("进程清理超时，已强制终止")
             
             if return_code != 0 or execution_error:
@@ -381,27 +542,32 @@ class Evaluator(multiprocessing.Process):
                 self.consecutive_failures = 0  # 重置连续失败计数
                 return True
                 
-        except TimeoutError as e:
-            error_msg = f"执行任务 {task} 时超时: {str(e)}"
-            task_logger.error(error_msg)
-            logger.error(error_msg)
-            self.consecutive_failures += 1  # 增加连续失败计数
-            return False
+        except (KeyboardInterrupt, SystemExit):
+            if self.current_process:
+                self.current_process.terminate()
+                try:
+                    self.current_process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    self.current_process.kill()
+            raise
             
         except Exception as e:
             error_msg = f"执行任务 {task} 时出错: {str(e)}"
             task_logger.error(error_msg)
             logger.error(error_msg)
             self.consecutive_failures += 1  # 增加连续失败计数
-            return False
-            
-        finally:
-            # 确保进程被终止
-            if process is not None:
+            if self.current_process:
                 try:
-                    process.kill()
-                except Exception as _:
-                    pass
+                    self.current_process.terminate()
+                    self.current_process.wait(timeout=5)
+                except Exception:
+                    try:
+                        self.current_process.kill()
+                    except Exception:
+                        pass
+            return False
+        finally:
+            self.current_process = None
 
     def update_task_stats(self, task, success, steps, misled):
         """更新任务统计信息"""
@@ -432,31 +598,48 @@ class Evaluator(multiprocessing.Process):
     def save_stats(self):
         """保存统计结果到parquet文件，合并已有结果"""
         try:
+            logger.debug("开始保存统计信息...")
+            logger.debug(f"当前DataFrame状态:\n{self.task_stats}")
+            
             # 确保父目录存在
-            os.makedirs(os.path.dirname(self.stats_file), exist_ok=True)
+            parent_dir = os.path.dirname(self.stats_file)
+            logger.debug(f"检查并创建父目录: {parent_dir}")
+            os.makedirs(parent_dir, exist_ok=True)
             
             # 读取已有的统计结果
             existing_stats = None
             if os.path.exists(self.stats_file):
                 try:
+                    logger.debug(f"尝试读取已有统计文件: {self.stats_file}")
                     existing_stats = pd.read_parquet(self.stats_file)
+                    logger.debug(f"成功读取已有统计数据，包含 {len(existing_stats)} 条记录")
                 except Exception as e:
                     logger.warning(f"读取已有统计结果失败: {str(e)}")
+                    logger.warning(f"错误类型: {type(e).__name__}")
+                    import traceback
+                    logger.warning(f"错误堆栈:\n{traceback.format_exc()}")
             
             # 准备要保存的DataFrame
+            logger.debug("准备保存数据...")
             save_df = self.task_stats.drop('steps_list', axis=1)
+            logger.debug(f"处理后的DataFrame大小: {save_df.shape}")
             
             # 如果有已存在的统计数据，合并结果
             if existing_stats is not None:
+                logger.debug("开始合并已有统计数据...")
                 # 更新现有数据
                 for task in save_df.index:
                     existing_stats.loc[task] = save_df.loc[task]
                 # 使用合并后的数据
                 save_df = existing_stats
+                logger.debug(f"合并后的DataFrame大小: {save_df.shape}")
             
-            # 保存到parquet文件
-            save_df.to_parquet(self.stats_file)
-            logger.info(f"任务统计信息已保存到: {self.stats_file}")
+            # 使用安全的文件保存机制
+            logger.debug("开始执行安全保存操作...")
+            if self.file_handler.safe_save(save_df):
+                logger.info(f"任务统计信息已安全保存到: {self.stats_file}")
+            else:
+                logger.error("保存统计信息失败")
             
             # 打印统计信息
             logger.info("\n任务执行统计:")
@@ -464,16 +647,25 @@ class Evaluator(multiprocessing.Process):
             
         except Exception as e:
             logger.error(f"保存统计信息时出错: {str(e)}")
+            logger.error(f"错误类型: {type(e).__name__}")
+            import traceback
+            logger.error(f"错误堆栈:\n{traceback.format_exc()}")
+            # 即使保存失败也要通知完成
+            self.state_manager.signal_save_complete()
+        finally:
+            # 确保在任何情况下都发送完成信号
+            self.state_manager.signal_save_complete()
 
     def run(self):
         """作为独立进程运行，执行所有任务"""
         try:
-            logger.info(f"Evaluator进程启动，配置文件: {self.config_file}")
+            logger.info(f"Evaluator进程启动，进程ID: {os.getpid()}")
+            logger.info(f"配置文件: {self.config_file}")
             logger.info(f"待执行任务: {self.tasks}")
             
             self.start_time = time.time()
-            # 通知主进程开始执行
-            self.status_queue.put(("start", {
+            # 使用安全的状态通知
+            self.status_queue.safe_put(("start", {
                 "total_tasks": self.total_tasks,
                 "start_time": self.start_time
             }))
@@ -481,7 +673,7 @@ class Evaluator(multiprocessing.Process):
             # 创建任务队列
             task_queue = [(task, trial) for task in self.tasks for trial in range(self.n_trials)]
             
-            while task_queue:
+            while task_queue and not self.state_manager.should_shutdown():
                 task, trial = task_queue.pop(0)
                 logger.info(f"执行任务 {task} 第 {trial + 1}/{self.n_trials} 次")
                 try:
@@ -489,7 +681,7 @@ class Evaluator(multiprocessing.Process):
                     
                     # 检查是否需要重启模拟器
                     if self.consecutive_failures >= 3:
-                        self.status_queue.put(("need_restart", None))
+                        self.status_queue.safe_put(("need_restart", None))
                         # 等待主进程重启模拟器
                         time.sleep(2)
                         self.consecutive_failures = 0
@@ -507,7 +699,7 @@ class Evaluator(multiprocessing.Process):
                         # 只有在任务成功时才增加完成计数和更新进度
                         self.completed_tasks += 1
                         # 通知主进程更新进度
-                        self.status_queue.put(("progress", {
+                        self.status_queue.safe_put(("progress", {
                             "completed": self.completed_tasks,
                             "total": self.total_tasks,
                             "current_task": task,
@@ -516,28 +708,44 @@ class Evaluator(multiprocessing.Process):
                     
                     # 通知主进程处理完状态更新
                     if success:
-                        self.status_queue.put(("task_success", task))
+                        self.status_queue.safe_put(("task_success", task))
                     else:
-                        self.status_queue.put(("task_failed", task))
+                        self.status_queue.safe_put(("task_failed", task))
                     
                     # 给主进程一点时间来处理和打印状态
                     time.sleep(0.1)
+                    
                 except KeyboardInterrupt:
-                    # 确保当前任务的统计信息被保存
-                    self.save_stats()
-                    raise
+                    logger.info("收到KeyboardInterrupt，准备退出...")
+                    if not self.state_manager.save_complete.is_set():
+                        self.save_stats()
+                    logger.info("KeyboardInterrupt处理完成，退出进程")
+                    os._exit(0)
+                except Exception as e:
+                    logger.error(f"执行任务时出错: {str(e)}")
+                    if not self.state_manager.save_complete.is_set():
+                        self.save_stats()
+                    logger.info("异常处理完成，退出进程")
+                    os._exit(1)
             
-            # 保存统计结果
-            self.save_stats()
+            # 正常完成所有任务
+            if not self.state_manager.save_complete.is_set():
+                self.save_stats()
             logger.info("所有任务执行完成")
             # 通知主进程所有任务已完成
-            self.status_queue.put(("all_tasks_completed", None))
+            self.status_queue.safe_put(("all_tasks_completed", None))
+            logger.info("正常退出进程")
+            os._exit(0)
             
         except KeyboardInterrupt:
-            # 确保统计信息被保存
-            self.save_stats()
-            raise
+            logger.info("主循环捕获到KeyboardInterrupt...")
+            if not self.state_manager.save_complete.is_set():
+                self.save_stats()
+            logger.info("主循环KeyboardInterrupt处理完成，退出进程")
+            os._exit(0)
         except Exception as e:
             logger.error(f"Evaluator进程执行出错: {str(e)}")
-            self.save_stats()
-            raise
+            if not self.state_manager.save_complete.is_set():
+                self.save_stats()
+            logger.info("主循环异常处理完成，退出进程")
+            os._exit(1)
