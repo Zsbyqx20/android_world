@@ -237,7 +237,8 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Suggestions\")"
+          ".text(\"Suggestions\")",
+          ".text(\"Settings\")"
         ]
       }
     ],
@@ -679,7 +680,8 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Suggestions\")"
+          ".text(\"Suggestions\")",
+          ".text(\"Settings\")"
         ]
       }
     ],
@@ -1575,7 +1577,8 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Suggestions\")"
+          ".text(\"Suggestions\")",
+          ".text(\"Settings\")"
         ]
       }
     ],
@@ -1614,7 +1617,8 @@
         },
         "allow": [],
         "deny": [
-          ".text(\"Suggestions\")"
+          ".text(\"Suggestions\")",
+          ".text(\"Settings\")"
         ]
       }
     ],
