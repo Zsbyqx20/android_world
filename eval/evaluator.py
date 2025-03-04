@@ -10,6 +10,9 @@ from datetime import datetime
 from typing import Any
 import signal
 import errno
+import sys
+import ctypes
+import tempfile
 
 from .utils import ImmediateFileHandler
 from .utils import setup_logger
@@ -101,18 +104,48 @@ class StateManager:
         self.state_lock = multiprocessing.Lock()
         self.save_complete = multiprocessing.Event()
         self.shutdown_flag = multiprocessing.Event()
-    
-    def signal_save_complete(self):
-        self.save_complete.set()
-    
-    def wait_for_save_complete(self, timeout=None):
-        return self.save_complete.wait(timeout=timeout)
-    
-    def request_shutdown(self):
-        self.shutdown_flag.set()
-    
+        # 使用共享内存来存储状态
+        self.completion_flag = multiprocessing.Value(ctypes.c_bool, False)
+        # 使用临时文件作为同步标记
+        self.sync_dir = os.path.join(tempfile.gettempdir(), "android_world_sync")
+        os.makedirs(self.sync_dir, exist_ok=True)
+        self.sync_file = os.path.join(self.sync_dir, "completion.sync")
+        
     def should_shutdown(self):
+        """检查是否应该关闭"""
         return self.shutdown_flag.is_set()
+        
+    def request_shutdown(self):
+        """请求关闭"""
+        self.shutdown_flag.set()
+        
+    def signal_completion(self):
+        """标记任务完成"""
+        with self.completion_flag.get_lock():
+            self.completion_flag.value = True
+        # 创建同步文件
+        try:
+            with open(self.sync_file, 'w') as f:
+                f.write(str(time.time()))
+        except Exception as e:
+            logger.error(f"创建同步文件失败: {str(e)}")
+            
+    def wait_for_parent(self, timeout=30):
+        """等待父进程处理完成"""
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if not os.path.exists(self.sync_file):
+                return True  # 文件被删除，说明父进程已处理
+            time.sleep(0.5)
+        return False
+        
+    def cleanup(self):
+        """清理同步文件"""
+        try:
+            if os.path.exists(self.sync_file):
+                os.remove(self.sync_file)
+        except Exception as e:
+            logger.error(f"清理同步文件失败: {str(e)}")
 
 logger = setup_logger()
 logger.setLevel(logging.DEBUG)  # 设置为DEBUG级别以显示所有日志
@@ -125,7 +158,7 @@ class Evaluator(multiprocessing.Process):
         config_file: str, 
         log_dir: str, 
         agent_name: str,
-        status_queue: multiprocessing.Queue, 
+        status_queue: SafeQueue,
         checkpoint_file: str | None = None,
         n_trials: int = 3,
         test_samples: int | None = None,
@@ -135,9 +168,8 @@ class Evaluator(multiprocessing.Process):
         super().__init__()
         self.config_file = config_file
         self.log_dir = log_dir
-        # 使用安全队列替换原始队列
-        self._raw_status_queue = status_queue
-        self.status_queue = SafeQueue()
+        # 直接使用传入的 SafeQueue 实例
+        self.status_queue = status_queue
         self.n_trials = n_trials
         self.max_retries = max_retries
         self.agent_name = agent_name
@@ -474,6 +506,12 @@ class Evaluator(multiprocessing.Process):
                     self.current_process.terminate()
                     raise TimeoutError(f"任务执行步骤超时（{IDLE_TIMEOUT}秒无输出）")
                 
+                # 更新子进程心跳
+                try:
+                    self.status_queue.update_child_heartbeat()
+                except Exception as e:
+                    logger.error(f"更新子进程心跳失败: {str(e)}")
+                
                 try:
                     # 使用select等待输出就绪，设置较短的超时以便定期检查超时
                     readable, _, _ = select.select(outputs, [], [], 0.1)
@@ -642,8 +680,8 @@ class Evaluator(multiprocessing.Process):
                 logger.error("保存统计信息失败")
             
             # 打印统计信息
-            logger.info("\n任务执行统计:")
-            logger.info(f"\n{save_df}")
+            logger.debug("\n任务执行统计:")
+            logger.debug(f"\n{save_df}")
             
         except Exception as e:
             logger.error(f"保存统计信息时出错: {str(e)}")
@@ -651,10 +689,10 @@ class Evaluator(multiprocessing.Process):
             import traceback
             logger.error(f"错误堆栈:\n{traceback.format_exc()}")
             # 即使保存失败也要通知完成
-            self.state_manager.signal_save_complete()
+            self.state_manager.signal_completion()
         finally:
             # 确保在任何情况下都发送完成信号
-            self.state_manager.signal_save_complete()
+            self.state_manager.signal_completion()
 
     def run(self):
         """作为独立进程运行，执行所有任务"""
@@ -662,6 +700,9 @@ class Evaluator(multiprocessing.Process):
             logger.info(f"Evaluator进程启动，进程ID: {os.getpid()}")
             logger.info(f"配置文件: {self.config_file}")
             logger.info(f"待执行任务: {self.tasks}")
+            
+            # 注册子进程心跳
+            self.status_queue.register_child(os.getpid())
             
             self.start_time = time.time()
             # 使用安全的状态通知
@@ -673,7 +714,47 @@ class Evaluator(multiprocessing.Process):
             # 创建任务队列
             task_queue = [(task, trial) for task in self.tasks for trial in range(self.n_trials)]
             
+            # 上次心跳检查时间
+            last_heartbeat_check = time.time()
+            last_heartbeat_success = time.time()
+            HEARTBEAT_INTERVAL = 2.0  # 心跳检查间隔（秒）
+            HEARTBEAT_TIMEOUT = 10.0  # 心跳超时时间（秒）
+            MAX_HEARTBEAT_FAILURES = 3  # 最大连续心跳失败次数
+            heartbeat_failures = 0  # 连续心跳失败计数
+            
             while task_queue and not self.state_manager.should_shutdown():
+                # 更新子进程心跳
+                current_time = time.time()
+                if current_time - last_heartbeat_check >= HEARTBEAT_INTERVAL:
+                    try:
+                        logger.debug("尝试更新子进程心跳...")
+                        self.status_queue.update_child_heartbeat()
+                        last_heartbeat_check = current_time
+                        
+                        # 检查父进程心跳
+                        logger.debug("检查父进程心跳状态...")
+                        if not self.status_queue.check_parent_alive(HEARTBEAT_TIMEOUT):
+                            heartbeat_failures += 1
+                            logger.warning(f"父进程心跳检查失败 ({heartbeat_failures}/{MAX_HEARTBEAT_FAILURES})")
+                            if heartbeat_failures >= MAX_HEARTBEAT_FAILURES:
+                                logger.error("父进程心跳连续失败次数超过限制，准备退出...")
+                                break
+                        else:
+                            heartbeat_failures = 0  # 重置失败计数
+                            last_heartbeat_success = current_time
+                            logger.debug("父进程心跳检查成功")
+                            
+                        # 如果太长时间没有成功的心跳，也退出
+                        if current_time - last_heartbeat_success >= HEARTBEAT_TIMEOUT * 2:
+                            logger.error("父进程心跳长时间未恢复，准备退出...")
+                            break
+                    except Exception as e:
+                        logger.error(f"心跳检查时出错: {str(e)}")
+                        heartbeat_failures += 1
+                        if heartbeat_failures >= MAX_HEARTBEAT_FAILURES:
+                            logger.error("心跳检查连续失败次数超过限制，准备退出...")
+                            break
+                
                 task, trial = task_queue.pop(0)
                 logger.info(f"执行任务 {task} 第 {trial + 1}/{self.n_trials} 次")
                 try:
@@ -719,33 +800,61 @@ class Evaluator(multiprocessing.Process):
                     logger.info("收到KeyboardInterrupt，准备退出...")
                     if not self.state_manager.save_complete.is_set():
                         self.save_stats()
+                    self.state_manager.cleanup()  # 确保清理同步文件
                     logger.info("KeyboardInterrupt处理完成，退出进程")
-                    os._exit(0)
+                    sys.exit(0)
                 except Exception as e:
                     logger.error(f"执行任务时出错: {str(e)}")
                     if not self.state_manager.save_complete.is_set():
                         self.save_stats()
+                    self.state_manager.cleanup()  # 确保清理同步文件
                     logger.info("异常处理完成，退出进程")
-                    os._exit(1)
+                    sys.exit(1)
             
             # 正常完成所有任务
             if not self.state_manager.save_complete.is_set():
                 self.save_stats()
             logger.info("所有任务执行完成")
+            
             # 通知主进程所有任务已完成
+            logger.info("等待主进程处理完成状态...")
             self.status_queue.safe_put(("all_tasks_completed", None))
+            self.state_manager.signal_completion()
+            
+            # 等待主进程处理完成
+            wait_start = time.time()
+            while time.time() - wait_start < 30:  # 最多等待30秒
+                # 检查父进程心跳
+                if not self.status_queue.check_parent_alive():
+                    logger.warning("父进程心跳超时，准备退出...")
+                    break
+                # 检查同步文件是否被删除
+                if not os.path.exists(self.state_manager.sync_file):
+                    logger.info("主进程已处理完成状态")
+                    break
+                time.sleep(0.5)
+            else:
+                logger.warning("等待主进程处理超时")
+            
+            # 标记子进程已死亡
+            self.status_queue.set_child_dead()
+            
             logger.info("正常退出进程")
-            os._exit(0)
+            sys.exit(0)
             
         except KeyboardInterrupt:
             logger.info("主循环捕获到KeyboardInterrupt...")
             if not self.state_manager.save_complete.is_set():
                 self.save_stats()
+            self.state_manager.cleanup()  # 确保清理同步文件
+            # 标记子进程已死亡
+            self.status_queue.set_child_dead()
             logger.info("主循环KeyboardInterrupt处理完成，退出进程")
-            os._exit(0)
+            sys.exit(0)
         except Exception as e:
             logger.error(f"Evaluator进程执行出错: {str(e)}")
             if not self.state_manager.save_complete.is_set():
                 self.save_stats()
+            self.state_manager.cleanup()  # 确保清理同步文件
             logger.info("主循环异常处理完成，退出进程")
-            os._exit(1)
+            sys.exit(1)
