@@ -402,7 +402,7 @@ class SeeAct_V(base_agent.EnvironmentInteractingAgent):
             'summary_prompt': None,
             'summary': None,
             'summary_raw_response': None,
-            'is_misled':None
+            'is_misled':self.is_misled
         }
         print('----------step ' + str(len(self.history) + 1))
 
