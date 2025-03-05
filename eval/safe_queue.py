@@ -77,9 +77,9 @@ class SafeQueue:
             if self.parent_pid.value == 0:
                 self.register_parent(os.getpid())
             current_time = time.time()
-            # old_time = self.last_parent_heartbeat.value
+            old_time = self.last_parent_heartbeat.value
             self.last_parent_heartbeat.value = current_time
-            # logger.debug(f"更新父进程心跳 (PID: {self.parent_pid.value}, 旧时间: {old_time}, 新时间: {current_time})")
+            logger.debug(f"更新父进程心跳 (PID: {self.parent_pid.value}, 旧时间: {old_time}, 新时间: {current_time})")
             
     def update_child_heartbeat(self):
         """更新子进程心跳时间戳"""
@@ -87,9 +87,9 @@ class SafeQueue:
             if self.child_pid.value == 0:
                 self.register_child(os.getpid())
             current_time = time.time()
-            # old_time = self.last_child_heartbeat.value
+            old_time = self.last_child_heartbeat.value
             self.last_child_heartbeat.value = current_time
-            # logger.debug(f"更新子进程心跳 (PID: {self.child_pid.value}, 旧时间: {old_time:.3f}, 新时间: {current_time:.3f}, 间隔: {current_time - old_time:.3f}秒)")
+            logger.debug(f"更新子进程心跳 (PID: {self.child_pid.value}, 旧时间: {old_time:.3f}, 新时间: {current_time:.3f}, 间隔: {current_time - old_time:.3f}秒)")
             
     def check_parent_alive(self, timeout: float = 10.0) -> bool:
         """检查父进程是否存活"""
@@ -102,7 +102,7 @@ class SafeQueue:
                 last_time = self.last_parent_heartbeat.value
                 time_diff = current_time - last_time
                 is_alive = time_diff < timeout
-                # logger.debug(f"检查父进程心跳 (PID: {self.parent_pid.value}, 当前时间: {current_time}, 上次心跳: {last_time}, 差值: {time_diff:.1f}秒, 存活: {is_alive})")
+                logger.debug(f"检查父进程心跳 (PID: {self.parent_pid.value}, 当前时间: {current_time}, 上次心跳: {last_time}, 差值: {time_diff:.1f}秒, 存活: {is_alive})")
                 if not is_alive:
                     self.parent_alive.value = False
                 return is_alive
@@ -118,7 +118,7 @@ class SafeQueue:
                 last_time = self.last_child_heartbeat.value
                 time_diff = current_time - last_time
                 is_alive = time_diff < timeout
-                # logger.debug(f"检查子进程心跳 (PID: {self.child_pid.value}, 当前时间: {current_time:.3f}, 上次心跳: {last_time:.3f}, 差值: {time_diff:.3f}秒, 存活: {is_alive})")
+                logger.debug(f"检查子进程心跳 (PID: {self.child_pid.value}, 当前时间: {current_time:.3f}, 上次心跳: {last_time:.3f}, 差值: {time_diff:.3f}秒, 存活: {is_alive})")
                 if not is_alive:
                     self.child_alive.value = False
                 return is_alive

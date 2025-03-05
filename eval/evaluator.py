@@ -680,8 +680,8 @@ class Evaluator(multiprocessing.Process):
                 logger.error("保存统计信息失败")
             
             # 打印统计信息
-            logger.debug("\n任务执行统计:")
-            logger.debug(f"\n{save_df}")
+            logger.info("\n任务执行统计:")
+            logger.info(f"\n{save_df}")
             
         except Exception as e:
             logger.error(f"保存统计信息时出错: {str(e)}")

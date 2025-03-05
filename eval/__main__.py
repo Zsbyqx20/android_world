@@ -3,14 +3,16 @@ import multiprocessing
 import signal
 import sys
 import time
+from tqdm import tqdm
 import os
 
 from .emulator import EmulatorManager
 from .evaluator import Evaluator
-from .utils import setup_logger, create_progress, log_success, log_error, log_warning, log_emulator, log_task
+from .utils import setup_logger
 from .safe_queue import SafeQueue
 
-logger = setup_logger("main")
+
+logger = setup_logger()
 MAX_CONSECUTIVE_RETRIES = 5
 
 
@@ -103,11 +105,11 @@ def main():
     def signal_handler(signum, frame):
         nonlocal shutdown_in_progress
         if shutdown_in_progress:
-            log_warning(logger, "关闭操作正在进行中，请耐心等待...")
+            logger.warning("关闭操作正在进行中，请耐心等待...")
             return
             
         shutdown_in_progress = True
-        log_warning(logger, f"收到信号 {signum}，准备退出程序")
+        logger.warning(f"收到信号 {signum}，准备退出程序")
         
         try:
             if 'evaluator' in locals():
@@ -122,11 +124,11 @@ def main():
                     time.sleep(1)
                     
             if 'manager' in locals():
-                log_emulator(logger, "正在关闭模拟器...")
+                logger.info("正在关闭模拟器...")
                 manager.safe_shutdown()
                 
         except Exception as e:
-            log_error(logger, f"关闭过程中出错: {str(e)}")
+            logger.error(f"关闭过程中出错: {str(e)}")
         finally:
             sys.exit(1)
 
@@ -152,15 +154,15 @@ def main():
         if args.snapshot:
             logger.info(f"使用模拟器快照: {args.snapshot}")
         
-        log_emulator(logger, "Starting emulator...")
+        logger.info("Starting emulator...")
         if not manager.start_emulator():
-            log_error(logger, "模拟器启动失败，退出程序")
+            logger.error("模拟器启动失败，退出程序")
             sys.exit(1)
-        log_success(logger, "Emulator started")
+        logger.info("Emulator started")
         
         # 首次安装应用
         if not manager.install_app():
-            log_error(logger, "初始应用安装失败，退出程序")
+            logger.error("初始应用安装失败，退出程序")
             manager.stop_emulator()
             sys.exit(1)
             
@@ -183,15 +185,14 @@ def main():
         # 启动评测器进程
         evaluator_process = multiprocessing.Process(target=evaluator.run)
         evaluator_process.start()
-        log_task(logger, f"Evaluator进程启动，进程ID: {evaluator_process.pid}")
+        logger.info(f"Evaluator进程启动，进程ID: {evaluator_process.pid}")
         
         consecutive_failures = 0
         emulator_restarts = 0
         MAX_RESTARTS = args.max_restarts
         
         # 创建进度条
-        progress = None
-        task_id = None
+        pbar = None
         
         # 上次心跳检查时间
         last_heartbeat_check = time.time()
@@ -216,9 +217,9 @@ def main():
                     if current_time - last_heartbeat_check >= HEARTBEAT_INTERVAL:
                         if not status_queue.check_child_alive(HEARTBEAT_TIMEOUT):
                             heartbeat_failures += 1
-                            log_warning(logger, f"子进程心跳检查失败 ({heartbeat_failures}/{MAX_HEARTBEAT_FAILURES})")
+                            logger.warning(f"子进程心跳检查失败 ({heartbeat_failures}/{MAX_HEARTBEAT_FAILURES})")
                             if heartbeat_failures >= MAX_HEARTBEAT_FAILURES:
-                                log_error(logger, "子进程心跳连续失败次数超过限制，准备关闭...")
+                                logger.error("子进程心跳连续失败次数超过限制，准备关闭...")
                                 break
                         else:
                             heartbeat_failures = 0  # 重置失败计数
@@ -227,7 +228,7 @@ def main():
                         
                         # 如果太长时间没有成功的心跳，也退出
                         if current_time - last_heartbeat_success >= HEARTBEAT_TIMEOUT * 2:
-                            log_error(logger, "子进程心跳长时间未恢复，准备关闭...")
+                            logger.error("子进程心跳长时间未恢复，准备关闭...")
                             break
                     
                     status_data = status_queue.safe_get(timeout=1)  # 缩短超时时间以便更频繁地检查心跳
@@ -238,76 +239,99 @@ def main():
                     
                     if status == "start":
                         # 初始化进度条
-                        progress = create_progress()
-                        task_id = progress.add_task(
-                            description="评测进度",
-                            total=data["total_tasks"]
+                        pbar = tqdm(
+                            total=data["total_tasks"],
+                            desc="评测进度",
+                            unit="task",
+                            position=0,
+                            leave=True,
+                            ncols=100,  # 设置进度条宽度
+                            bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]'
                         )
-                        progress.start()
-                        
-                    elif status == "progress" and progress is not None:
+                        start_time = data["start_time"]
+                    elif status == "progress":
                         # 更新进度条
-                        progress.update(
-                            task_id,
-                            completed=data["completed"],
-                            description=f"评测进度 - 当前任务: {data['current_task']} ({data['current_trial']}/{args.repeat_times})"
-                        )
-                        
-                    elif status == "task_success":
-                        log_success(logger, f"任务 {data} 执行成功")
-                        consecutive_failures = 0
-                        
-                    elif status == "task_failed":
-                        log_error(logger, f"任务 {data} 执行失败")
-                        consecutive_failures += 1
-                        
+                        if pbar:
+                            pbar.update(1)
+                            # 截断较长的任务名称，保留前20个字符
+                            threshold_length = 7
+                            task_name = data['current_task'][:threshold_length] + '...' if len(data['current_task']) > threshold_length else data['current_task']
+                            task_desc = f"任务: {task_name} ({data['current_trial']}/{evaluator.n_trials})"
+                            pbar.set_description_str(task_desc)
                     elif status == "need_restart":
-                        if emulator_restarts < MAX_RESTARTS:
-                            log_emulator(logger, "正在重启模拟器...")
-                            manager.restart_emulator()
-                            emulator_restarts += 1
-                            consecutive_failures = 0
-                        else:
-                            log_error(logger, f"模拟器重启次数超过限制 ({MAX_RESTARTS})，退出程序")
+                        # 需要重启模拟器
+                        if emulator_restarts >= MAX_RESTARTS:
+                            logger.error(f"模拟器重启次数超过限制 ({MAX_RESTARTS})，退出程序")
                             break
-                            
+                        emulator_restarts += 1
+                        logger.warning(f"正在重启模拟器 (第 {emulator_restarts} 次)")
+                        manager.reload_snapshot()
                     elif status == "all_tasks_completed":
-                        log_success(logger, "所有任务执行完成")
+                        logger.info("所有任务执行完成")
+                        logger.info("正在关闭模拟器...")
+                        if not manager.safe_shutdown():
+                            logger.error("模拟器关闭失败")
+                        else:
+                            logger.info("模拟器已成功关闭")
+                        # 关闭状态队列
+                        status_queue.queue.close()
+                        status_queue.queue.join_thread()
+                        # 删除同步文件以通知子进程
+                        evaluator.state_manager.cleanup()
                         break
-                        
+                    elif status == "check_alive":
+                        # 更新子进程心跳
+                        status_queue.update_child_heartbeat()
+                        continue
+                    elif status == "task_success":
+                        consecutive_failures = 0
+                    elif status == "task_failed":
+                        consecutive_failures += 1
+                        if consecutive_failures >= MAX_CONSECUTIVE_RETRIES:
+                            logger.error(f"连续失败次数超过限制 ({MAX_CONSECUTIVE_RETRIES})，准备重启模拟器")
+                            if not manager.restart_if_needed():
+                                logger.error("模拟器重启失败")
+                                break
+                            consecutive_failures = 0
                 except Exception as e:
-                    log_error(logger, f"主循环出错: {str(e)}")
-                    break
+                    logger.error(f"处理状态队列时出错: {str(e)}")
+                    if not evaluator_process.is_alive():
+                        logger.warning("子进程已退出，准备关闭...")
+                        break
                     
-        finally:
-            if progress is not None:
-                progress.stop()
-            
-            # 等待子进程结束
-            logger.info("等待子进程结束...")
-            evaluator_process.join(timeout=5)
+            # 等待子进程退出
+            logger.info("等待子进程退出...")
+            evaluator_process.join(timeout=30)
             if evaluator_process.is_alive():
+                logger.warning("子进程未能正常退出，强制终止...")
                 evaluator_process.terminate()
                 evaluator_process.join(timeout=5)
                 if evaluator_process.is_alive():
                     evaluator_process.kill()
+                
+        finally:
+            if pbar:
+                pbar.close()
             
-            # 关闭模拟器
-            log_emulator(logger, "正在关闭模拟器...")
-            manager.safe_shutdown()
+            # 标记父进程已死亡
+            status_queue.set_parent_dead()
             
-    except KeyboardInterrupt:
-        log_warning(logger, "收到用户中断，准备退出程序")
-        if 'evaluator_process' in locals() and evaluator_process.is_alive():
-            evaluator_process.terminate()
-        if 'manager' in locals():
-            manager.safe_shutdown()
-        sys.exit(1)
+            # 确保模拟器被关闭
+            if 'manager' in locals():
+                logger.info("确保模拟器被关闭...")
+                manager.safe_shutdown()
+            
+            # 如果是因为重启次数过多而退出，返回非零状态码
+            if emulator_restarts >= MAX_RESTARTS:
+                sys.exit(1)
+                
     except Exception as e:
-        log_error(logger, f"程序执行出错: {str(e)}")
-        if 'evaluator_process' in locals() and evaluator_process.is_alive():
-            evaluator_process.terminate()
+        logger.error(f"程序执行出错: {str(e)}")
+        if 'evaluator' in locals():
+            logger.info("保存当前统计结果...")
+            evaluator.save_stats()
         if 'manager' in locals():
+            logger.info("关闭模拟器...")
             manager.safe_shutdown()
         sys.exit(1)
 
