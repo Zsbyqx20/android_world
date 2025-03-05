@@ -40,7 +40,7 @@
   },
   "TasksCompletedTasksForDate": {
     "packageName": "org.tasks",
-    "activityName": "com.todoroo.astrid.activity.MainActivity",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
     "overlayStyles": [
       {
         "x": 0.0,
@@ -534,7 +534,7 @@
   },
   "TasksHighPriorityTasksDueOnDate": {
     "packageName": "org.tasks",
-    "activityName": "com.todoroo.astrid.activity.MainActivity",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
     "overlayStyles": [
       {
         "x": 0.0,
@@ -1067,7 +1067,7 @@
   },
   "TasksIncompleteTasksOnDate": {
     "packageName": "org.tasks",
-    "activityName": "com.todoroo.astrid.activity.MainActivity",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
     "overlayStyles": [
       {
         "x": 0.0,
@@ -1334,7 +1334,7 @@
   },
   "TasksHighPriorityTasks": {
     "packageName": "org.tasks",
-    "activityName": "com.todoroo.astrid.activity.MainActivity",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
     "overlayStyles": [
       {
         "x": 0.0,
@@ -1716,7 +1716,7 @@
   },
   "TasksDueOnDate": {
     "packageName": "org.tasks",
-    "activityName": "com.todoroo.astrid.activity.MainActivity",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
     "overlayStyles": [
       {
         "x": 0.0,
@@ -1866,7 +1866,7 @@
   },
   "TasksDueNextWeek": {
     "packageName": "org.tasks",
-    "activityName": "com.todoroo.astrid.activity.MainActivity",
+    "activityName": "com.todoroo.astrid.activity.TaskListActivity",
     "overlayStyles": [
       {
         "x": 0.0,

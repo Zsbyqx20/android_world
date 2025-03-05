@@ -109,7 +109,7 @@ _PATTERN_TO_ACTIVITY = immutabledict.immutabledict({
     'caa|caa test|context aware access': 'com.google.ccc.hosted.contextawareaccess.thirdpartyapp/.ChooserActivity',
     'osmand': 'net.osmand/net.osmand.plus.activities.MapActivity',
     'tasks|tasks app|tasks.org:': (
-        'org.tasks/com.todoroo.astrid.activity.MainActivity'
+        'org.tasks/com.todoroo.astrid.activity.TaskListActivity'
     ),
     'open tracks sports tracker|activity tracker|open tracks|opentracks': (
         'de.dennisguse.opentracks/de.dennisguse.opentracks.TrackListActivity'
