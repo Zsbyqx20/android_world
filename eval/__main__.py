@@ -103,7 +103,7 @@ def main():
     
     # 创建信号处理函数
     def signal_handler(signum, frame):
-        nonlocal shutdown_in_progress
+        nonlocal shutdown_in_progress, evaluator_process
         if shutdown_in_progress:
             logger.warning("关闭操作正在进行中，请耐心等待...")
             return
@@ -112,14 +112,14 @@ def main():
         logger.warning(f"收到信号 {signum}，准备退出程序")
         
         try:
-            if 'evaluator' in locals():
+            if 'evaluator_process' in locals() and evaluator_process.is_alive():
                 # 通知子进程保存统计
                 logger.info("正在保存统计信息...")
                 evaluator.state_manager.request_shutdown()
                 evaluator.save_stats()
                 # 等待保存完成
                 for _ in range(5):  # 最多等待5秒
-                    if not evaluator.is_alive():
+                    if not evaluator_process.is_alive():
                         break
                     time.sleep(1)
                     
@@ -220,6 +220,16 @@ def main():
                             logger.warning(f"子进程心跳检查失败 ({heartbeat_failures}/{MAX_HEARTBEAT_FAILURES})")
                             if heartbeat_failures >= MAX_HEARTBEAT_FAILURES:
                                 logger.error("子进程心跳连续失败次数超过限制，准备关闭...")
+                                # 在退出前尝试保存结果
+                                try:
+                                    if evaluator_process.is_alive():
+                                        logger.info("正在保存统计信息...")
+                                        evaluator.state_manager.request_shutdown()
+                                        evaluator.save_stats()
+                                        # 给一点时间让子进程保存状态
+                                        time.sleep(2)
+                                except Exception as e:
+                                    logger.error(f"保存统计信息时出错: {str(e)}")
                                 break
                         else:
                             heartbeat_failures = 0  # 重置失败计数
@@ -327,9 +337,15 @@ def main():
                 
     except Exception as e:
         logger.error(f"程序执行出错: {str(e)}")
-        if 'evaluator' in locals():
+        if 'evaluator_process' in locals() and evaluator_process.is_alive():
             logger.info("保存当前统计结果...")
-            evaluator.save_stats()
+            try:
+                evaluator.state_manager.request_shutdown()
+                evaluator.save_stats()
+                # 给一点时间让子进程保存状态
+                time.sleep(2)
+            except Exception as save_error:
+                logger.error(f"保存统计信息时出错: {str(save_error)}")
         if 'manager' in locals():
             logger.info("关闭模拟器...")
             manager.safe_shutdown()

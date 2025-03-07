@@ -283,6 +283,9 @@ class Evaluator(multiprocessing.Process):
         )
         self.completed_tasks = 0
         self.start_time = None
+        self.last_save_time = time.time()  # 添加最后保存时间记录
+        self.save_interval = 300  # 每5分钟保存一次
+        self.last_save_completed = 0  # 上次保存时的完成任务数
 
     def safe_exit(self, code=0):
         """统一的安全退出流程"""
@@ -705,6 +708,8 @@ class Evaluator(multiprocessing.Process):
             self.status_queue.register_child(os.getpid())
             
             self.start_time = time.time()
+            self.last_save_time = time.time()  # 初始化最后保存时间
+            
             # 使用安全的状态通知
             self.status_queue.safe_put(("start", {
                 "total_tasks": self.total_tasks,
@@ -720,11 +725,20 @@ class Evaluator(multiprocessing.Process):
             HEARTBEAT_INTERVAL = 2.0  # 心跳检查间隔（秒）
             HEARTBEAT_TIMEOUT = 10.0  # 心跳超时时间（秒）
             MAX_HEARTBEAT_FAILURES = 3  # 最大连续心跳失败次数
-            heartbeat_failures = 0  # 连续心跳失败计数
+            heartbeat_failures = 0
             
             while task_queue and not self.state_manager.should_shutdown():
-                # 更新子进程心跳
                 current_time = time.time()
+                
+                # 检查是否需要定期保存
+                if (current_time - self.last_save_time >= self.save_interval and 
+                    self.completed_tasks > self.last_save_completed):
+                    logger.info("执行定期保存...")
+                    self.save_stats()
+                    self.last_save_time = current_time
+                    self.last_save_completed = self.completed_tasks
+                
+                # 更新子进程心跳
                 if current_time - last_heartbeat_check >= HEARTBEAT_INTERVAL:
                     try:
                         logger.debug("尝试更新子进程心跳...")
@@ -762,6 +776,12 @@ class Evaluator(multiprocessing.Process):
                     
                     # 检查是否需要重启模拟器
                     if self.consecutive_failures >= 3:
+                        # 在重启模拟器前保存状态
+                        if self.completed_tasks > self.last_save_completed:
+                            logger.info("重启模拟器前保存状态...")
+                            self.save_stats()
+                            self.last_save_completed = self.completed_tasks
+                        
                         self.status_queue.safe_put(("need_restart", None))
                         # 等待主进程重启模拟器
                         time.sleep(2)
@@ -776,6 +796,11 @@ class Evaluator(multiprocessing.Process):
                             task_queue.append((task, trial))
                         else:
                             logger.error(f"任务 {task} 达到最大重试次数 {self.max_retries}")
+                            # 任务达到最大重试次数时保存状态
+                            if self.completed_tasks > self.last_save_completed:
+                                logger.info("任务达到最大重试次数，保存当前状态...")
+                                self.save_stats()
+                                self.last_save_completed = self.completed_tasks
                     else:
                         # 只有在任务成功时才增加完成计数和更新进度
                         self.completed_tasks += 1
@@ -798,21 +823,21 @@ class Evaluator(multiprocessing.Process):
                     
                 except KeyboardInterrupt:
                     logger.info("收到KeyboardInterrupt，准备退出...")
-                    if not self.state_manager.save_complete.is_set():
+                    if self.completed_tasks > self.last_save_completed:
                         self.save_stats()
                     self.state_manager.cleanup()  # 确保清理同步文件
                     logger.info("KeyboardInterrupt处理完成，退出进程")
                     sys.exit(0)
                 except Exception as e:
                     logger.error(f"执行任务时出错: {str(e)}")
-                    if not self.state_manager.save_complete.is_set():
+                    if self.completed_tasks > self.last_save_completed:
                         self.save_stats()
                     self.state_manager.cleanup()  # 确保清理同步文件
                     logger.info("异常处理完成，退出进程")
                     sys.exit(1)
             
             # 正常完成所有任务
-            if not self.state_manager.save_complete.is_set():
+            if self.completed_tasks > self.last_save_completed:
                 self.save_stats()
             logger.info("所有任务执行完成")
             
@@ -844,7 +869,7 @@ class Evaluator(multiprocessing.Process):
             
         except KeyboardInterrupt:
             logger.info("主循环捕获到KeyboardInterrupt...")
-            if not self.state_manager.save_complete.is_set():
+            if self.completed_tasks > self.last_save_completed:
                 self.save_stats()
             self.state_manager.cleanup()  # 确保清理同步文件
             # 标记子进程已死亡
@@ -853,7 +878,7 @@ class Evaluator(multiprocessing.Process):
             sys.exit(0)
         except Exception as e:
             logger.error(f"Evaluator进程执行出错: {str(e)}")
-            if not self.state_manager.save_complete.is_set():
+            if self.completed_tasks > self.last_save_completed:
                 self.save_stats()
             self.state_manager.cleanup()  # 确保清理同步文件
             logger.info("主循环异常处理完成，退出进程")
