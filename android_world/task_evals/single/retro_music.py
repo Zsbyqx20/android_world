@@ -263,7 +263,7 @@ class RetroPlaylistDuration(RetroCreatePlaylist):
 
     # Guarantee there is an answer.
     durations = _generate_list_with_sum(
-        int(47.5 * 60 * 1000), len(self.params['files'])
+        47.5 * 60 * 1000, len(self.params['files'])
     )
     for file, duration in zip(self.params['files'], durations):
       user_data_generation.write_mp3_file_to_device(
