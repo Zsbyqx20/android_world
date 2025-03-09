@@ -113,15 +113,35 @@ def main():
         
         try:
             if 'evaluator_process' in locals() and evaluator_process.is_alive():
-                # 通知子进程保存统计
-                logger.info("正在保存统计信息...")
+                # 通知子进程保存统计并等待完成
+                logger.info("正在通知子进程保存统计信息...")
                 evaluator.state_manager.request_shutdown()
-                evaluator.save_stats()
-                # 等待保存完成
-                for _ in range(5):  # 最多等待5秒
+                
+                # 给予更多时间等待保存完成
+                wait_start = time.time()
+                max_wait_time = 30  # 最多等待30秒
+                
+                while time.time() - wait_start < max_wait_time:
                     if not evaluator_process.is_alive():
+                        logger.info("子进程已完成并退出")
                         break
-                    time.sleep(1)
+                    
+                    # 检查是否完成保存
+                    if evaluator.state_manager.save_complete.is_set():
+                        logger.info("子进程已完成数据保存")
+                        break
+                        
+                    time.sleep(0.5)  # 使用更小的间隔来减少等待时间
+                else:
+                    logger.warning(f"等待子进程保存数据超过{max_wait_time}秒")
+                    
+                # 如果子进程仍在运行，强制终止
+                if evaluator_process.is_alive():
+                    logger.warning("子进程未能正常退出，强制终止...")
+                    evaluator_process.terminate()
+                    evaluator_process.join(timeout=5)
+                    if evaluator_process.is_alive():
+                        evaluator_process.kill()
                     
             if 'manager' in locals():
                 logger.info("正在关闭模拟器...")
@@ -338,14 +358,37 @@ def main():
     except Exception as e:
         logger.error(f"程序执行出错: {str(e)}")
         if 'evaluator_process' in locals() and evaluator_process.is_alive():
-            logger.info("保存当前统计结果...")
+            logger.info("通知子进程保存当前统计结果...")
             try:
                 evaluator.state_manager.request_shutdown()
-                evaluator.save_stats()
-                # 给一点时间让子进程保存状态
-                time.sleep(2)
+                # 给予充足的时间保存
+                wait_start = time.time()
+                max_wait_time = 30
+                
+                while time.time() - wait_start < max_wait_time:
+                    if not evaluator_process.is_alive():
+                        logger.info("子进程已完成并退出")
+                        break
+                    
+                    if evaluator.state_manager.save_complete.is_set():
+                        logger.info("子进程已完成数据保存")
+                        break
+                        
+                    time.sleep(0.5)
+                else:
+                    logger.warning(f"等待子进程保存数据超过{max_wait_time}秒")
+                    
             except Exception as save_error:
                 logger.error(f"保存统计信息时出错: {str(save_error)}")
+                
+            # 如果子进程仍在运行，强制终止
+            if evaluator_process.is_alive():
+                logger.warning("子进程未能正常退出，强制终止...")
+                evaluator_process.terminate()
+                evaluator_process.join(timeout=5)
+                if evaluator_process.is_alive():
+                    evaluator_process.kill()
+                    
         if 'manager' in locals():
             logger.info("关闭模拟器...")
             manager.safe_shutdown()

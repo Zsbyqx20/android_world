@@ -16,29 +16,7 @@ import tempfile
 
 from .utils import ImmediateFileHandler
 from .utils import setup_logger
-
-# 安全组件类
-class SafeQueue:
-    """安全的队列封装，提供可靠的进程间通信"""
-    def __init__(self):
-        self.queue = multiprocessing.Queue()
-        self.lock = multiprocessing.Lock()
-        self.put_event = multiprocessing.Event()
-    
-    def safe_put(self, item, timeout=None):
-        with self.lock:
-            try:
-                self.queue.put(item, timeout=timeout)
-                self.put_event.set()
-                return True
-            except Exception:
-                return False
-    
-    def safe_get(self, timeout=None):
-        try:
-            return self.queue.get(timeout=timeout)
-        except Exception:
-            return None
+from .safe_queue import SafeQueue
 
 class SafeFileHandler:
     """安全的文件操作处理器"""
@@ -46,17 +24,23 @@ class SafeFileHandler:
         self.filename = filename
         self.lock = multiprocessing.Lock()
         self.temp_file = f"{filename}.tmp"
+        self.backup_file = f"{filename}.bak"
     
     def safe_save(self, data_frame):
-        """安全地保存数据，添加详细的日志输出"""
+        """安全地保存数据，添加详细的日志输出和验证"""
         with self.lock:
             logger.debug(f"开始安全保存操作 - 目标文件: {self.filename}")
             logger.debug(f"临时文件路径: {self.temp_file}")
+            logger.debug(f"备份文件路径: {self.backup_file}")
             logger.debug(f"当前工作目录: {os.getcwd()}")
+            
+            # 检查数据有效性
+            if data_frame is None or data_frame.empty:
+                logger.error("尝试保存空的DataFrame")
+                return False
             
             # 检查目录权限
             target_dir = os.path.dirname(self.filename) or '.'
-            
             logger.debug(f"目标目录权限检查: {target_dir}")
             logger.debug(f"- 目录存在: {os.path.exists(target_dir)}")
             logger.debug(f"- 可写入: {os.access(target_dir, os.W_OK)}")
@@ -66,20 +50,62 @@ class SafeFileHandler:
                 os.makedirs(target_dir, exist_ok=True)
                 logger.debug("目标目录创建/确认成功")
                 
+                # 如果原文件存在，创建备份
+                if os.path.exists(self.filename):
+                    try:
+                        os.replace(self.filename, self.backup_file)
+                        logger.debug("创建原文件备份成功")
+                    except Exception as backup_error:
+                        logger.error(f"创建备份文件失败: {str(backup_error)}")
+                        # 继续执行，因为这不是致命错误
+                
                 # 保存到临时文件
                 logger.debug(f"开始写入临时文件: {self.temp_file}")
                 data_frame.to_parquet(self.temp_file)
                 logger.debug("临时文件写入成功")
                 
-                # 检查临时文件
+                # 验证临时文件
                 if not os.path.exists(self.temp_file):
                     raise FileNotFoundError(f"临时文件创建失败: {self.temp_file}")
-                logger.debug(f"临时文件大小: {os.path.getsize(self.temp_file)} bytes")
+                
+                temp_size = os.path.getsize(self.temp_file)
+                logger.debug(f"临时文件大小: {temp_size} bytes")
+                
+                # 验证临时文件大小
+                if temp_size == 0:
+                    raise ValueError("临时文件大小为0")
+                
+                # 验证临时文件可读性
+                try:
+                    test_df = pd.read_parquet(self.temp_file)
+                    if test_df.empty:
+                        raise ValueError("读取的临时文件数据为空")
+                    logger.debug("临时文件数据验证成功")
+                except Exception as verify_error:
+                    raise ValueError(f"临时文件验证失败: {str(verify_error)}")
                 
                 # 原子性重命名
                 logger.debug(f"开始重命名临时文件到目标文件: {self.filename}")
                 os.replace(self.temp_file, self.filename)
                 logger.debug("文件重命名成功")
+                
+                # 验证最终文件
+                if not os.path.exists(self.filename):
+                    raise FileNotFoundError(f"目标文件不存在: {self.filename}")
+                
+                final_size = os.path.getsize(self.filename)
+                if final_size != temp_size:
+                    raise ValueError(f"文件大小不匹配: 期望 {temp_size}，实际 {final_size}")
+                
+                logger.debug("最终文件验证成功")
+                
+                # 清理备份文件
+                if os.path.exists(self.backup_file):
+                    try:
+                        os.remove(self.backup_file)
+                        logger.debug("清理备份文件成功")
+                    except Exception as cleanup_error:
+                        logger.warning(f"清理备份文件失败: {str(cleanup_error)}")
                 
                 return True
                 
@@ -90,22 +116,38 @@ class SafeFileHandler:
                 import traceback
                 logger.error(f"异常堆栈: \n{traceback.format_exc()}")
                 
+                # 尝试恢复备份
+                if os.path.exists(self.backup_file):
+                    try:
+                        os.replace(self.backup_file, self.filename)
+                        logger.info("已恢复备份文件")
+                    except Exception as restore_error:
+                        logger.error(f"恢复备份失败: {str(restore_error)}")
+                
+                # 清理临时文件
                 if os.path.exists(self.temp_file):
                     try:
                         os.remove(self.temp_file)
                         logger.debug("临时文件清理成功")
                     except Exception as cleanup_error:
                         logger.error(f"临时文件清理失败: {str(cleanup_error)}")
+                
                 return False
 
 class StateManager:
     """状态管理器，处理进程状态同步"""
     def __init__(self):
-        self.state_lock = multiprocessing.Lock()
-        self.save_complete = multiprocessing.Event()
-        self.shutdown_flag = multiprocessing.Event()
+        # 进程同步原语
+        self.state_lock = multiprocessing.Lock()  # 用于保护状态访问
+        self.save_complete = multiprocessing.Event()  # 标记保存完成
+        self.shutdown_flag = multiprocessing.Event()  # 标记关闭请求
+        self.save_in_progress = multiprocessing.Event()  # 标记正在保存
+        
         # 使用共享内存来存储状态
         self.completion_flag = multiprocessing.Value(ctypes.c_bool, False)
+        self.save_attempts = multiprocessing.Value(ctypes.c_int, 0)
+        self.max_save_attempts = 3  # 最大保存尝试次数
+        
         # 使用临时文件作为同步标记
         self.sync_dir = os.path.join(tempfile.gettempdir(), "android_world_sync")
         os.makedirs(self.sync_dir, exist_ok=True)
@@ -118,6 +160,41 @@ class StateManager:
     def request_shutdown(self):
         """请求关闭"""
         self.shutdown_flag.set()
+        
+    def start_save(self) -> bool:
+        """开始保存操作
+        
+        Returns:
+            bool: 是否成功获取保存锁
+        """
+        if self.save_in_progress.is_set():
+            logger.debug("保存操作正在进行中...")
+            return False
+            
+        with self.save_attempts.get_lock():
+            if self.save_attempts.value >= self.max_save_attempts:
+                logger.debug("保存尝试次数超过限制...")
+                return False
+            self.save_attempts.value += 1
+            
+        self.save_in_progress.set()
+        return True
+        
+    def end_save(self, success: bool):
+        """结束保存操作
+        
+        Args:
+            success: 保存是否成功
+        """
+        if success:
+            self.save_complete.set()
+            with self.save_attempts.get_lock():
+                self.save_attempts.value = 0
+        self.save_in_progress.clear()
+        
+    def is_save_complete(self) -> bool:
+        """检查是否已完成保存"""
+        return self.save_complete.is_set()
         
     def signal_completion(self):
         """标记任务完成"""
@@ -146,6 +223,16 @@ class StateManager:
                 os.remove(self.sync_file)
         except Exception as e:
             logger.error(f"清理同步文件失败: {str(e)}")
+            
+    def reset(self):
+        """重置状态"""
+        self.save_complete.clear()
+        self.save_in_progress.clear()
+        with self.save_attempts.get_lock():
+            self.save_attempts.value = 0
+        with self.completion_flag.get_lock():
+            self.completion_flag.value = False
+        self.cleanup()
 
 logger = setup_logger()
 logger.setLevel(logging.DEBUG)  # 设置为DEBUG级别以显示所有日志
@@ -310,9 +397,17 @@ class Evaluator(multiprocessing.Process):
                     pass
         
         # 保存状态
-        if not self.state_manager.save_complete.is_set():
+        if not self.state_manager.is_save_complete():
             logger.debug("保存最终状态...")
-            self.save_stats()
+            max_attempts = 3
+            for attempt in range(max_attempts):
+                logger.debug(f"尝试保存数据 (第 {attempt + 1}/{max_attempts} 次)")
+                if self.save_stats():
+                    logger.info("数据保存成功")
+                    break
+                time.sleep(1)  # 在重试之前等待一下
+            else:
+                logger.error(f"在 {max_attempts} 次尝试后仍未能成功保存数据")
         
         # 清理队列资源
         try:
@@ -321,6 +416,13 @@ class Evaluator(multiprocessing.Process):
             self.status_queue.queue.join_thread()
         except Exception as _:
             pass
+        
+        # 发送完成信号
+        self.state_manager.signal_completion()
+        
+        # 等待父进程处理完成
+        if not self.state_manager.wait_for_parent(timeout=10):
+            logger.warning("等待父进程处理超时")
         
         logger.info("安全退出完成")
         os._exit(code)
@@ -636,10 +738,75 @@ class Evaluator(multiprocessing.Process):
         else:
             self.task_stats.at[task, 'avg_steps'] = None
 
+    def _validate_stats_data(self, df: pd.DataFrame) -> bool:
+        """验证统计数据的完整性
+        
+        Args:
+            df: 要验证的DataFrame
+            
+        Returns:
+            bool: 数据是否有效
+        """
+        try:
+            # 检查必要的列是否存在
+            required_columns = ['success_count', 'misled_count', 'total_trials', 
+                             'success_rate', 'misled_rate', 'avg_steps']
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            if missing_columns:
+                logger.error(f"数据缺少必要的列: {missing_columns}")
+                return False
+            
+            # 检查数据类型和取值范围（允许空值）
+            for col in ['success_count', 'misled_count', 'total_trials']:
+                valid = df[col].isnull() | (df[col].astype(float) >= 0)
+                if not all(valid):
+                    logger.error(f"发现无效的{col}值")
+                    return False
+                
+            # 检查success_rate和misled_rate的格式（允许空值）
+            for rate_col in ['success_rate', 'misled_rate']:
+                invalid_rates = []
+                for rate in df[rate_col]:
+                    if pd.isna(rate):
+                        continue
+                    try:
+                        num, total = map(int, rate.split('/'))
+                        if num < 0 or total < 0 or num > total:
+                            invalid_rates.append(rate)
+                    except (ValueError, AttributeError):
+                        invalid_rates.append(rate)
+                if invalid_rates:
+                    logger.error(f"发现无效的{rate_col}值: {invalid_rates}")
+                    return False
+            
+            # 检查avg_steps（允许空值）
+            valid_steps = df['avg_steps'].isnull() | (df['avg_steps'].astype(float) >= 0)
+            if not all(valid_steps):
+                logger.error("发现无效的avg_steps值")
+                return False
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"数据验证时出错: {str(e)}")
+            return False
+
     def save_stats(self):
         """保存统计结果到parquet文件，合并已有结果"""
+        # 如果已经在保存或达到最大尝试次数，直接返回
+        if not self.state_manager.start_save():
+            logger.warning("无法开始保存操作：可能正在进行中或已达到最大尝试次数")
+            return False
+        
         try:
             logger.debug("开始保存统计信息...")
+            
+            # 在保存前验证数据
+            if self.task_stats is None or self.task_stats.empty:
+                logger.error("当前没有可保存的统计数据")
+                self.state_manager.end_save(False)
+                return False
+                
             logger.debug(f"当前DataFrame状态:\n{self.task_stats}")
             
             # 确保父目录存在
@@ -647,55 +814,61 @@ class Evaluator(multiprocessing.Process):
             logger.debug(f"检查并创建父目录: {parent_dir}")
             os.makedirs(parent_dir, exist_ok=True)
             
-            # 读取已有的统计结果
-            existing_stats = None
+            # 创建数据的深拷贝
+            with self.state_manager.state_lock:  # 使用状态锁保护数据拷贝
+                logger.debug("创建数据深拷贝...")
+                save_df = self.task_stats.copy()
+                # 移除 steps_list 列
+                if 'steps_list' in save_df.columns:
+                    save_df = save_df.drop('steps_list', axis=1)
+                logger.debug(f"处理后的DataFrame大小: {save_df.shape}")
+            
+            # 读取已有的统计结果并合并
             if os.path.exists(self.stats_file):
                 try:
                     logger.debug(f"尝试读取已有统计文件: {self.stats_file}")
                     existing_stats = pd.read_parquet(self.stats_file)
                     logger.debug(f"成功读取已有统计数据，包含 {len(existing_stats)} 条记录")
+                    
+                    # 合并数据，保留已有数据中不在当前数据中的记录
+                    merged_df = existing_stats.copy()
+                    # 更新或添加当前数据中的记录
+                    for task in save_df.index:
+                        merged_df.loc[task] = save_df.loc[task]
+                    save_df = merged_df
+                    logger.debug(f"合并后的DataFrame大小: {save_df.shape}")
                 except Exception as e:
                     logger.warning(f"读取已有统计结果失败: {str(e)}")
-                    logger.warning(f"错误类型: {type(e).__name__}")
-                    import traceback
-                    logger.warning(f"错误堆栈:\n{traceback.format_exc()}")
             
-            # 准备要保存的DataFrame
-            logger.debug("准备保存数据...")
-            save_df = self.task_stats.drop('steps_list', axis=1)
-            logger.debug(f"处理后的DataFrame大小: {save_df.shape}")
-            
-            # 如果有已存在的统计数据，合并结果
-            if existing_stats is not None:
-                logger.debug("开始合并已有统计数据...")
-                # 更新现有数据
-                for task in save_df.index:
-                    existing_stats.loc[task] = save_df.loc[task]
-                # 使用合并后的数据
-                save_df = existing_stats
-                logger.debug(f"合并后的DataFrame大小: {save_df.shape}")
+            # 验证合并后的数据
+            if not self._validate_stats_data(save_df):
+                logger.error("数据验证失败")
+                self.state_manager.end_save(False)
+                return False
             
             # 使用安全的文件保存机制
             logger.debug("开始执行安全保存操作...")
-            if self.file_handler.safe_save(save_df):
+            success = self.file_handler.safe_save(save_df)
+            
+            if success:
                 logger.info(f"任务统计信息已安全保存到: {self.stats_file}")
+                # 打印统计信息
+                logger.info("\n任务执行统计:")
+                logger.info(f"\n{save_df}")
+                self.state_manager.end_save(True)
+                return True
             else:
                 logger.error("保存统计信息失败")
-            
-            # 打印统计信息
-            logger.info("\n任务执行统计:")
-            logger.info(f"\n{save_df}")
+                self.state_manager.end_save(False)
+                return False
             
         except Exception as e:
             logger.error(f"保存统计信息时出错: {str(e)}")
             logger.error(f"错误类型: {type(e).__name__}")
             import traceback
             logger.error(f"错误堆栈:\n{traceback.format_exc()}")
-            # 即使保存失败也要通知完成
-            self.state_manager.signal_completion()
-        finally:
-            # 确保在任何情况下都发送完成信号
-            self.state_manager.signal_completion()
+            self.state_manager.end_save(False)
+            return False
 
     def run(self):
         """作为独立进程运行，执行所有任务"""
