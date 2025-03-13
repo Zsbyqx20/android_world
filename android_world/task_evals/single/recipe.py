@@ -125,6 +125,32 @@ class RecipeDeleteSingleWithRecipeWithNoise(_RecipeDeleteMultipleRecipes):
   complexity = 2
   n_rows = 1
   n_rows_noise = 29
+  @classmethod
+  def generate_random_params(cls) -> dict[str, Any]:
+    """Generate random parameters for a remove recipe task."""
+
+    recipes = []
+    while len(recipes) < cls.n_rows + cls.n_rows_noise:
+      candidate = _generate_random_recipe()
+      if not any([candidate.title == r.title for r in recipes]):
+        recipes.append(candidate)
+
+    if cls.n_rows_noise > 0:
+      noise_rows = recipes[: cls.n_rows_noise]
+      target_rows = recipes[cls.n_rows_noise :]
+      for i in range(5):
+        noise_rows[i] = dataclasses.replace(
+            noise_rows[i],
+            title=f"0_{noise_rows[i].title}"
+        )
+      return {
+          sqlite_validators.ROW_OBJECTS: target_rows,
+          sqlite_validators.NOISE_ROW_OBJECTS: noise_rows,
+      }
+    else:
+      return {
+          sqlite_validators.ROW_OBJECTS: recipes,
+      }
 
 
 class RecipeDeleteMultipleRecipes(_RecipeDeleteMultipleRecipes):
@@ -141,6 +167,32 @@ class RecipeDeleteMultipleRecipesWithNoise(_RecipeDeleteMultipleRecipes):
   complexity = 3.4
   n_rows = 3
   n_rows_noise = 29
+  @classmethod
+  def generate_random_params(cls) -> dict[str, Any]:
+    """Generate random parameters for a remove recipe task."""
+
+    recipes = []
+    while len(recipes) < cls.n_rows + cls.n_rows_noise:
+      candidate = _generate_random_recipe()
+      if not any([candidate.title == r.title for r in recipes]):
+        recipes.append(candidate)
+
+    if cls.n_rows_noise > 0:
+      noise_rows = recipes[: cls.n_rows_noise]
+      target_rows = recipes[cls.n_rows_noise :]
+      for i in range(5):
+        noise_rows[i] = dataclasses.replace(
+            noise_rows[i],
+            title=f"0_{noise_rows[i].title}"
+        )
+      return {
+          sqlite_validators.ROW_OBJECTS: target_rows,
+          sqlite_validators.NOISE_ROW_OBJECTS: noise_rows,
+      }
+    else:
+      return {
+          sqlite_validators.ROW_OBJECTS: recipes,
+      }
 
 
 class RecipeDeleteMultipleRecipesWithConstraint(_RecipeDeleteMultipleRecipes):
@@ -173,6 +225,11 @@ class RecipeDeleteMultipleRecipesWithConstraint(_RecipeDeleteMultipleRecipes):
         replacement=False,
         filter_fn=lambda r: ingredient not in r.directions.lower(),
     )
+    for i in range(5):
+        noise[i] = dataclasses.replace(
+            noise[i],
+            title=f"0_{noise[i].title}"
+        )
     targets = []
     n_rows = cls.n_rows
     while n_rows > 0:
@@ -226,29 +283,21 @@ class RecipeDeleteDuplicateRecipes(
   @classmethod
   def generate_random_params(cls) -> dict[str, Any]:
     """Generate random parameters for a remove recipe task."""
-    first_recipe = _generate_random_recipe()
-    first_recipe = dataclasses.replace(
-        first_recipe,
-        title=f"0_{first_recipe.title}"
+
+    rows = sqlite_schema_utils.get_random_items(
+        cls.n_rows_noise + cls.n_rows,
+        _generate_random_recipe,
+        replacement=False,
     )
-    
-    target = _generate_random_recipe()
-    while target.title == first_recipe.title:
-        target = _generate_random_recipe()
-    
-    noise = []
-    while len(noise) < cls.n_rows_noise - 1:  # -1 因为已经有了 first_recipe
-        recipe = _generate_random_recipe()
-        if (recipe.title != first_recipe.title and 
-            recipe.title != target.title and 
-            not any(recipe.title == r.title for r in noise)):
-            noise.append(recipe)
-    
-    noise.insert(0, first_recipe)
-    
+    target = rows.pop()
+    for i in range(len(rows)):
+        rows[i] = dataclasses.replace(
+            rows[i],
+            title=f"0_{rows[i].title}"
+        )
     return {
         sqlite_validators.ROW_OBJECTS: [target, target],
-        sqlite_validators.NOISE_ROW_OBJECTS: noise,
+        sqlite_validators.NOISE_ROW_OBJECTS: rows,
     }
 
 
@@ -270,37 +319,34 @@ class RecipeDeleteDuplicateRecipes2(RecipeDeleteDuplicateRecipes):
   @classmethod
   def generate_random_params(cls) -> dict[str, Any]:
     """Generate random parameters for a remove recipe task."""
-    first_recipe = _generate_random_recipe()
-    first_recipe = dataclasses.replace(
-        first_recipe,
-        title=f"0_{first_recipe.title}"
-    )
-    
     noise = sqlite_schema_utils.get_random_items(
         7,
         _generate_random_recipe,
         replacement=False,
-        filter_fn=lambda r: r.title != first_recipe.title,  # 确保与first_recipe不同
     )
-    
+
     target = noise.pop()
-    
-    while len(noise) < cls.n_rows_noise - 1:  # -1 因为还要加入first_recipe
-        value = sqlite_schema_utils.get_random_items(
-            1,
-            _generate_random_recipe,
-            replacement=True,
-            filter_fn=lambda r: r.title == target.title,  # 生成与target同名的recipes
-        )[0]
-        if value != target:
-            noise.append(value)
-    noise.insert(0, first_recipe)
-    
+
+    # Add variations of target recipe, with different properties.
+    while len(noise) < cls.n_rows_noise:
+      value = sqlite_schema_utils.get_random_items(
+          1,
+          _generate_random_recipe,
+          replacement=True,
+          filter_fn=lambda r: r.title == target.title,
+      )[0]
+      if value != target:
+        noise.append(value)
+    for i in range(5):
+        noise[i] = dataclasses.replace(
+            noise[i],
+            title=f"0_{noise[i].title}"
+        )
+
     return {
         sqlite_validators.ROW_OBJECTS: [target, target],
         sqlite_validators.NOISE_ROW_OBJECTS: noise,
     }
-
 
 class RecipeDeleteDuplicateRecipes3(RecipeDeleteDuplicateRecipes):
   """Harder deduplication task, with more noise events and agent must scroll."""
@@ -312,46 +358,40 @@ class RecipeDeleteDuplicateRecipes3(RecipeDeleteDuplicateRecipes):
   @classmethod
   def generate_random_params(cls) -> dict[str, Any]:
     """Generate random parameters for a remove recipe task."""
-    first_recipe = _generate_random_recipe()
-    first_recipe = dataclasses.replace(
-        first_recipe,
-        title=f"0_{first_recipe.title}"
-    )
-    
     noise = sqlite_schema_utils.get_random_items(
         22,
         _generate_random_recipe,
         replacement=False,
-        filter_fn=lambda r: (
-            r.title != first_recipe.title and 
-            r.title != 'Avocado Toast with Egg'
-        ),
+        filter_fn=lambda r: r.title != 'Avocado Toast with Egg',
     )
-    
+
     target = noise.pop()
-    
+
+    # Add noise at the top of the recipe screen, requiring agent to scroll.
     noise += sqlite_schema_utils.get_random_items(
         3,
         _generate_random_recipe,
         replacement=False,
         filter_fn=lambda r: r.title == 'Avocado Toast with Egg',
     )
-    
-    while len(noise) < cls.n_rows_noise - 1:  # -1 因为还要加入first_recipe
-        value = sqlite_schema_utils.get_random_items(
-            1,
-            _generate_random_recipe,
-            replacement=True,
-            filter_fn=lambda r: (
-                r.title == target.title and 
-                r.description == target.description
-            ),
-        )[0]
-        if value != target:
-            noise.append(value)
-    
-    noise.insert(0, first_recipe)
-    
+
+    # Add variations of target recipe, with different properties.
+    while len(noise) < cls.n_rows_noise:
+      value = sqlite_schema_utils.get_random_items(
+          1,
+          _generate_random_recipe,
+          replacement=True,
+          filter_fn=lambda r: (
+              r.title == target.title and r.description == target.description
+          ),
+      )[0]
+      if value != target:
+        noise.append(value)
+    for i in range(5):
+        noise[i] = dataclasses.replace(
+            noise[i],
+            title=f"0_{noise[i].title}"
+        )
     return {
         sqlite_validators.ROW_OBJECTS: [target, target],
         sqlite_validators.NOISE_ROW_OBJECTS: noise,
