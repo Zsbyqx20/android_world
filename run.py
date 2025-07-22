@@ -36,7 +36,7 @@ from android_world.agents import m3a
 from android_world.agents import random_agent
 from android_world.agents import seeact
 from android_world.agents import t3a
-from android_world.agents import cogagent,autodroid, m3a_aria_ui,seeact_v
+from android_world.agents import cogagent,autodroid, m3a_aria_ui,seeact_v, uitars15
 from android_world.env import env_launcher
 from android_world.env import interface
 
@@ -199,6 +199,10 @@ def _get_agent(
     agent = m3a_aria_ui.Ariaui(env,infer.Gpt4Wrapper('gpt-4o'))
   elif _AGENT_NAME.value == 'UGround':
     agent = seeact_v.SeeAct_V(env, infer.Gpt4Wrapper('gpt-4o'),grounding_model_name="UGround-V1-7B")
+  elif _AGENT_NAME.value == 'uitars15':
+    agent = uitars15.UITARS15Agent(env, use_thinking=False)
+  elif _AGENT_NAME.value == 'uitars15_thinking':
+    agent = uitars15.UITARS15Agent(env)
   if not agent:
     raise ValueError(f'Unknown agent: {_AGENT_NAME.value}')
 
