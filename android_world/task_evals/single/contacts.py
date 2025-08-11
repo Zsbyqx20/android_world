@@ -30,6 +30,7 @@ class ContactsAddContact(contacts_validators.AddContact):
   complexity = 1.2
   app_names = ("contacts",)
   template = "Create a new contact for {name}. Their number is {number}."
+  noise_num = 1
 
 
 def _contact_info_is_entered(

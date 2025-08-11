@@ -66,7 +66,7 @@ def add_contact(
   time.sleep(ui_delay_sec)
   actuation.find_and_click_element("SAVE", env)
   time.sleep(ui_delay_sec)
-  adb_utils.press_back_button(env)
+  adb_utils.press_home_button(env)
   time.sleep(ui_delay_sec)
 
 

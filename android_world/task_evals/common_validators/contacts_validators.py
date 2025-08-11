@@ -34,10 +34,37 @@ class AddContact(task_eval.TaskEval):
       'required': ['name', 'number'],
   }
   template = ''
+  noise_num = 0
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
     super().initialize_task(env)
     contacts_utils.clear_contacts(env.controller)
+    if self.noise_num > 0:
+      # Create target contact for comparison
+      target_contact = contacts_utils.Contact(
+          self.params['name'],
+          contacts_utils.clean_phone_number(self.params['number']),
+      )
+
+      # Keep track of generated noise contacts to avoid duplicates
+      generated_contacts = set()
+
+      for _ in range(self.noise_num):
+        # Generate noise contact that doesn't match target
+        while True:
+          noise_name = user_data_generation.generate_random_name()
+          noise_number = user_data_generation.generate_random_number()
+          noise_contact = contacts_utils.Contact(
+              noise_name,
+              contacts_utils.clean_phone_number(noise_number),
+          )
+
+          # Ensure noise contact doesn't match target and isn't duplicate
+          if (noise_contact != target_contact and
+              noise_contact not in generated_contacts):
+            generated_contacts.add(noise_contact)
+            contacts_utils.add_contact(noise_name, noise_number, env.controller)
+            break
 
   def _has_contact(self, contacts: list[contacts_utils.Contact]) -> bool:
     return (
