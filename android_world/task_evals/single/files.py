@@ -40,7 +40,7 @@ class FilesMoveFile(task_eval.TaskEval):
   def __init__(self, params: dict[str, Any]):
     super().__init__(params)
     self.move_file_task = file_validators.MoveFile(
-        params, device_constants.EMULATOR_DATA
+        params, device_constants.EMULATOR_DATA, is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
@@ -94,7 +94,7 @@ class FilesDeleteFile(task_eval.TaskEval):
   def __init__(self, params: dict[str, Any]):
     super().__init__(params)
     self.delete_file_task = file_validators.DeleteFile(
-        params, device_constants.EMULATOR_DATA
+        params, device_constants.EMULATOR_DATA, is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
