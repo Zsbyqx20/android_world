@@ -40,7 +40,7 @@ class SimpleDrawProCreateDrawing(task_eval.TaskEval):
     super().__init__(params)
     self.initialized = False
     self.create_file_task = file_validators.CreateFile(
-        params, os.path.join(device_constants.EMULATOR_DATA, "Pictures")
+        params, os.path.join(device_constants.EMULATOR_DATA, "Pictures"), is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:
