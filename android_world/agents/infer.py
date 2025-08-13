@@ -287,6 +287,7 @@ class Gpt4Wrapper(LlmWrapper, MultimodalLlmWrapper):
     headers = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {self.openai_api_key}',
+        'api-key':self.openai_api_key
     }
 
     payload = {

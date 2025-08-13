@@ -1,3 +1,6 @@
 {
     "editor.formatOnSave": false,
+    "workbench.editorAssociations": {
+        "file:/**/*.parquet": "jupyter-data-wrangler"
+    },
 }

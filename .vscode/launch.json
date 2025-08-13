@@ -5,14 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "RetroPlaylistDuration_Attack",
+            "name": "MarkorMergeNotes",
             "type": "debugpy",
             "request": "launch",
             "program": "run.py",
             "console": "integratedTerminal",
             "args": [
-                "--tasks=RetroPlaylistDuration",
-                "--attack_config=debug/output/setting_d1_aclick.json"
+                "--tasks=MarkorMergeNotes",
+                "--attack_config=config/setting_d2_aclick.json",
+                "--agent_name=ariaui"
             ],
         }, 
         {
