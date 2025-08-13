@@ -296,6 +296,7 @@ class AsyncAndroidEnv(AsyncEnv):
   def execute_action(self, action: json_action.JSONAction) -> None:
     if action.action_type == json_action.ANSWER:
       self.interaction_cache = action.text
+
       if action.text:
         self.display_message(action.text, header='Agent answered:')
       return

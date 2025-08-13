@@ -45,7 +45,6 @@ long_press(point='<point>x1 y1</point>')
 type(content='') #If you want to submit your input, use "\\n" at the end of `content`.
 scroll(point='<point>x1 y1</point>', direction='down or up or right or left')
 open_app(app_name=\'\')
-drag(start_point='<point>x1 y1</point>', end_point='<point>x2 y2</point>')
 press_home()
 press_back()
 finished(content='xxx') # Use escape characters \\', \\", and \\n in content part to ensure we can parse the content in normal python string format.
@@ -173,17 +172,10 @@ def escape_single_quotes(text: str) -> str:
 
 
 def parse_action_to_structure_output(
-    text: str, factor: int, origin_resized_height: int, origin_resized_width: int,
-    model_type: str = "qwen25vl", max_pixels: int = 16384*28*28, min_pixels: int = 100*28*28
+    text: str
 ) -> List[Dict[str, Any]]:
     """Parse UI-TARS response text into structured actions."""
     text = text.strip()
-
-    if model_type == "qwen25vl":
-        smart_resize_height, smart_resize_width = smart_resize(
-            origin_resized_height, origin_resized_width,
-            factor=IMAGE_FACTOR, min_pixels=min_pixels, max_pixels=max_pixels
-        )
 
     # Extract thought and action
     thought_pattern = r"Thought: (.+?)(?=\s*Action:|$)"
@@ -236,26 +228,6 @@ def parse_action_to_structure_output(
             param = str(param).lstrip()
             action_inputs[param_name.strip()] = param
 
-            # Handle start_box or end_box parameters
-            if "start_box" in param_name or "end_box" in param_name:
-                ori_box = param
-                numbers = ori_box.replace("(", "").replace(")", "").split(",")
-
-                if model_type == "qwen25vl":
-                    float_numbers = []
-                    for num_idx, num in enumerate(numbers):
-                        num = float(num)
-                        if (num_idx + 1) % 2 == 0:
-                            float_numbers.append(float(num/smart_resize_height))
-                        else:
-                            float_numbers.append(float(num/smart_resize_width))
-                else:
-                    float_numbers = [float(num) / factor for num in numbers]
-
-                if len(float_numbers) == 2:
-                    float_numbers = [float_numbers[0], float_numbers[1], float_numbers[0], float_numbers[1]]
-                action_inputs[param_name.strip()] = str(float_numbers)
-
         actions.append({
             "thought": thought,
             "action_type": action_type,
@@ -267,7 +239,7 @@ def parse_action_to_structure_output(
 
 
 def uitars_action_to_android_action(
-    parsed_response: Dict[str, Any], screen_size: Tuple[int, int]
+    parsed_response: Dict[str, Any], scale_factor: float
 ) -> Optional[Dict[str, Any]]:
     """Convert UI-TARS action to android_world JSON action format."""
     result_action = {
@@ -314,6 +286,10 @@ def uitars_action_to_android_action(
     elif action_type == "open_app":
         result_action["action_type"] = "open_app"
         result_action["app_name"] = action_inputs.get("app_name", "")
+    elif action_type == "press_home":
+        result_action["action_type"] = "navigate_home"
+    elif action_type == "press_back":
+        result_action["action_type"] = "navigate_back"
     else:
         logger.warning(f"Unsupported action type: {action_type}")
         return None
@@ -331,12 +307,28 @@ def uitars_action_to_android_action(
                     x, y = x1, y1
 
                 # Convert relative coordinates to absolute
-                result_action["x"] = int(x * screen_size[0])
-                result_action["y"] = int(y * screen_size[1])
+                result_action["x"] = int(x*scale_factor)
+                result_action["y"] = int(y*scale_factor)
         except Exception as e:
             logger.error(f"Error parsing start_box coordinates: {e}")
             return None
+    if "point" in action_inputs:
+        try:
+            box_coords = eval(action_inputs["point"])
+            if len(box_coords) >= 2:
+                x1, y1 = box_coords[0], box_coords[1]
+                if len(box_coords) >= 4:
+                    x2, y2 = box_coords[2], box_coords[3]
+                    x, y = (x1 + x2) / 2, (y1 + y2) / 2
+                else:
+                    x, y = x1, y1
 
+                # Convert relative coordinates to absolute
+                result_action["x"] = int(x*scale_factor)
+                result_action["y"] = int(y*scale_factor)
+        except Exception as e:
+            logger.error(f"Error parsing point coordinates: {e}")
+            return None
     # Handle drag end coordinates
     if action_type == "drag" and "end_box" in action_inputs:
         try:
@@ -349,8 +341,8 @@ def uitars_action_to_android_action(
                 else:
                     end_x, end_y = x1, y1
 
-                result_action["end_x"] = int(end_x * screen_size[0])
-                result_action["end_y"] = int(end_y * screen_size[1])
+                result_action["end_x"] = int(end_x*scale_factor)
+                result_action["end_y"] = int(end_y*scale_factor)
         except Exception as e:
             logger.error(f"Error parsing end_box coordinates: {e}")
 
@@ -374,15 +366,15 @@ class UITARSAgent(base_agent.EnvironmentInteractingAgent):
             "prompt_style": "qwen25vl_normal",
             "input_swap": True,
             "language": "English",
-            "history_n": 5,
+            "history_n": 2,
             "max_pixels": 16384*28*28,
-            "min_pixels": 100*28*28,
+            "min_pixels": 4*28*28,
             "callusr_tolerance": 3,
             "temperature": 0.0,
             "top_k": -1,
             "top_p": 0.9,
             "max_tokens": 500,
-            "server_url": "http://127.0.0.1:8000",
+            "server_url": "http://127.0.0.0:7999",
             "endpoint": "/v1/chat/completions"
         }
 
@@ -401,7 +393,7 @@ class UITARSAgent(base_agent.EnvironmentInteractingAgent):
         self.observations = []
         self.history_images = []
         self.history_responses = []
-        self.action_parse_res_factor = 1000
+        self.action_parse_res_factor = 28
         self.cur_callusr_count = 0
 
         # Configuration shortcuts
@@ -480,25 +472,23 @@ class UITARSAgent(base_agent.EnvironmentInteractingAgent):
             if actions and len(actions) > 0:
                 # Parse the action from UI-TARS format
                 parsed_actions = parse_action_to_structure_output(
-                    prediction,
-                    self.action_parse_res_factor,
-                    screenshot_pil.height,
-                    screenshot_pil.width,
-                    self.model_type,
-                    self.max_pixels,
-                    self.min_pixels
+                    prediction
                 )
 
                 if parsed_actions:
                     parsed_action = parsed_actions[0]
                     step_data["step"] = parsed_action.get("thought", "")
                     step_data["action"] = parsed_action.get("action_type", "")
-
+                    smart_resize_height, smart_resize_width = smart_resize(
+                        screenshot_pil.height,screenshot_pil.width,self.action_parse_res_factor,
+                        self.min_pixels,self.max_pixels
+                    )
+                    scale_factor=screenshot_pil.height/smart_resize_height
                     # Convert UI-TARS action to android_world action
                     result_action = uitars_action_to_android_action(
-                        parsed_action, step_data["screen_size"]
+                        parsed_action, scale_factor
                     )
-
+                    print(f"LLM response:\n{prediction}\naction_dict:\n{result_action}")
                     if result_action is None or result_action["action_type"] is None:
                         return base_agent.AgentInteractionResult(False, step_data)
 
@@ -508,7 +498,6 @@ class UITARSAgent(base_agent.EnvironmentInteractingAgent):
                             return base_agent.AgentInteractionResult(True, step_data)
                         else:
                             return base_agent.AgentInteractionResult(True, step_data)
-
                     converted_action = json_action.JSONAction(**result_action)
 
                     # Handle attack detection (same as original CogAgent)
@@ -559,10 +548,6 @@ class UITARSAgent(base_agent.EnvironmentInteractingAgent):
         payload = {
             "model": "ui-tars",
             "messages": messages,
-            "frequency_penalty": 1,
-            "max_tokens": self.max_tokens,
-            "temperature": self.temperature,
-            "top_p": self.top_p
         }
 
         async with aiohttp.ClientSession() as session:
@@ -624,16 +609,6 @@ class UITARSAgent(base_agent.EnvironmentInteractingAgent):
         for image_bytes in self.history_images[-self.history_n:]:
             try:
                 image = Image.open(io.BytesIO(image_bytes))
-
-                # Resize image if needed
-                if image.width * image.height > self.max_pixels:
-                    resize_factor = math.sqrt(self.max_pixels / (image.width * image.height))
-                    width, height = int(image.width * resize_factor), int(image.height * resize_factor)
-                    image = image.resize((width, height))
-                if image.width * image.height < self.min_pixels:
-                    resize_factor = math.sqrt(self.min_pixels / (image.width * image.height))
-                    width, height = math.ceil(image.width * resize_factor), math.ceil(image.height * resize_factor)
-                    image = image.resize((width, height))
 
                 if image.mode != "RGB":
                     image = image.convert("RGB")
@@ -714,13 +689,7 @@ class UITARSAgent(base_agent.EnvironmentInteractingAgent):
         # Parse the prediction
         try:
             parsed_responses = parse_action_to_structure_output(
-                prediction,
-                self.action_parse_res_factor,
-                origin_resized_height,
-                origin_resized_width,
-                self.model_type,
-                self.max_pixels,
-                self.min_pixels
+                prediction
             )
         except Exception as e:
             logger.error(f"Parsing action error: {prediction}, with error: {e}")

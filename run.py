@@ -37,6 +37,7 @@ from android_world.agents import random_agent
 from android_world.agents import seeact
 from android_world.agents import t3a
 from android_world.agents import cogagent,autodroid, m3a_aria_ui,seeact_v, uitars15
+from android_world.agents import ui_tars
 from android_world.env import env_launcher
 from android_world.env import interface
 
@@ -187,22 +188,24 @@ def _get_agent(
   elif _AGENT_NAME.value == 't3a_gpt4':
     agent = t3a.T3A(env, infer.Gpt4Wrapper('gpt-4o'))
   elif _AGENT_NAME.value == 'm3a_gpt4v':
-    agent = m3a.M3A(env, infer.Gpt4Wrapper('gpt-4o'))
+    agent = m3a.M3A(env, infer.Gpt4Wrapper('gpt-4o-mini'))
   # SeeAct.
   elif _AGENT_NAME.value == 'seeact':
     agent = seeact.SeeAct(env)
   elif _AGENT_NAME.value == 'cogagent':
     agent = cogagent.CogAgent(env)
   elif _AGENT_NAME.value == 'autodroid':
-    agent = autodroid.Autodroid(env,infer.Gpt4Wrapper('gpt-4o'))
+    agent = autodroid.Autodroid(env,infer.Gpt4Wrapper('gpt-4o-mini'))
   elif _AGENT_NAME.value == 'ariaui':
-    agent = m3a_aria_ui.Ariaui(env,infer.Gpt4Wrapper('gpt-4o'))
+    agent = m3a_aria_ui.Ariaui(env,infer.Gpt4Wrapper('gpt-4o-mini'))
   elif _AGENT_NAME.value == 'UGround':
-    agent = seeact_v.SeeAct_V(env, infer.Gpt4Wrapper('gpt-4o'),grounding_model_name="UGround-V1-7B")
+    agent = seeact_v.SeeAct_V(env, infer.Gpt4Wrapper('gpt-4o-mini'),grounding_model_name="UGround-V1-7B")
   elif _AGENT_NAME.value == 'uitars15':
     agent = uitars15.UITARS15Agent(env, use_thinking=False)
   elif _AGENT_NAME.value == 'uitars15_thinking':
     agent = uitars15.UITARS15Agent(env)
+  elif _AGENT_NAME.value == 'ui_tars':
+    agent = ui_tars.UITARSAgent(env)
   if not agent:
     raise ValueError(f'Unknown agent: {_AGENT_NAME.value}')
 

@@ -375,11 +375,9 @@ def uitars15_action_to_android_action(
     elif action_type == "drag":
         result_action["action_type"] = "drag"
     elif action_type == "press_home":
-        result_action["action_type"] = "key"
-        result_action["text"] = "KEYCODE_HOME"
+        result_action["action_type"] = "navigate_home"
     elif action_type == "press_back":
-        result_action["action_type"] = "key"
-        result_action["text"] = "KEYCODE_BACK"
+        result_action["action_type"] = "navigate_back"
     elif action_type == "open_app":
         result_action["action_type"] = "open_app"
         result_action["app_name"] = action_inputs.get("app_name", "")
@@ -532,7 +530,7 @@ class UITARS15Agent(base_agent.EnvironmentInteractingAgent):
         }
 
         data = {
-            "model": "doubao-1-5-thinking-vision-pro-250428",
+            "model": "ep-20250722213820-fqrbm",
             "messages": messages,
             "max_tokens": self.max_tokens,
             "top_p": self.top_p,
@@ -624,7 +622,10 @@ class UITARS15Agent(base_agent.EnvironmentInteractingAgent):
             step_data["raw_response"] = prediction
 
             # Handle special actions
-            if actions == ["DONE"]:
+            if actions[0] == "DONE":
+                if actions[1]:
+                    self.env.execute_action(json_action.JSONAction(**{"action_type":"answer","text":actions[1]}))
+                    print("Agent answered:",actions[1])
                 return base_agent.AgentInteractionResult(True, step_data)
             elif actions == ["WAIT"]:
                 time.sleep(5)  # UITARS15 wait duration
@@ -674,17 +675,9 @@ class UITARS15Agent(base_agent.EnvironmentInteractingAgent):
                         and converted_action.action_type
                     ):
                         extras = {}
-                        if "start_box" in parsed_action.get("action_inputs", {}):
-                            try:
-                                box_coords = eval(parsed_action["action_inputs"]["start_box"])
-                                if len(box_coords) >= 4:
-                                    x1, y1, x2, y2 = box_coords[:4]
-                                    w, h = self.env.logical_screen_size
-                                    a, b, c, d = int(x1*w), int(y1*h), int(x2*w), int(y2*h)
-                                    extras["bbox"] = representation_utils.BoundingBox(a, c, b, d)
-                            except Exception as e:
-                                logger.error(f"Error processing bbox for attack detection: {e}")
-
+                        if converted_action.x and converted_action.y:
+                            x,y=converted_action.x,converted_action.y
+                            extras["bbox"]=representation_utils.BoundingBox(x,x,y,y)
                         matched = capture_action(
                             converted_action.action_type,
                             self.env.controller._misleading_truth,
@@ -853,10 +846,10 @@ class UITARS15Agent(base_agent.EnvironmentInteractingAgent):
         for parsed_response in parsed_responses:
             if "action_type" in parsed_response:
                 action_type = parsed_response["action_type"]
-
+                action_content = parsed_response["action_inputs"]["content"] if "content" in parsed_response["action_inputs"] else ""
                 if action_type == FINISH_WORD:
                     self.actions.append(actions)
-                    return prediction, ["DONE"]
+                    return prediction, ["DONE",action_content]
                 elif action_type == WAIT_WORD:
                     self.actions.append(actions)
                     return prediction, ["WAIT"]
