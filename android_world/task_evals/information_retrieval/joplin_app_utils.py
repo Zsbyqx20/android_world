@@ -52,16 +52,28 @@ def setup_task_state(
 
   # Keep track of already created folders.
   folder_mapping = {}
-  notes += _generate_random_notes(
+  noise_notes = _generate_random_notes(
       100,
       exclusion_conditions,
       [note.folder for note in relevant_state.notes],
       folder_mapping,
       env,
   )
+
+  # Add the guaranteed "A" note first (it's already first in noise_notes)
+  notes.append(noise_notes[0])
+
+  # Add target notes from relevant_state
+  target_notes = []
   for note in relevant_state.notes:
-    notes.append(_create_note_from_proto(note, folder_mapping, env))
-  random.shuffle(notes)
+    target_notes.append(_create_note_from_proto(note, folder_mapping, env))
+
+  # Shuffle the remaining noise notes and target notes together
+  remaining_notes = noise_notes[1:] + target_notes
+  random.shuffle(remaining_notes)
+
+  # Combine: guaranteed "A" note first, then shuffled remaining notes
+  notes.extend(remaining_notes)
   add_notes(notes, env)
 
 
@@ -224,6 +236,24 @@ def _create_note_from_proto(
   )
 
 
+def _create_guaranteed_a_note(
+    folder_mapping: dict[str, str],
+    env: interface.AsyncEnv,
+) -> sqlite_schema_utils.JoplinNote:
+  """Creates a guaranteed TODO item starting with 'A' to be placed first."""
+  guaranteed_note = state_pb2.Note()
+  guaranteed_note.folder = "Personal"  # Place in Personal folder
+  guaranteed_note.title = "An Important Reference Task"
+  guaranteed_note.body = (
+      "This is an important reference task that should appear first in the list. "
+      "Complete this task to organize key information for various activities."
+  )
+  guaranteed_note.is_todo = "True"  # Make it a TODO item
+  guaranteed_note.todo_completed = "False"  # Not completed yet
+
+  return _create_note_from_proto(guaranteed_note, folder_mapping, env)
+
+
 def _generate_random_notes(
     num_notes: int,
     exclusion_conditions: list[task_pb2.ExclusionCondition],
@@ -232,8 +262,12 @@ def _generate_random_notes(
     env: interface.AsyncEnv,
 ) -> list[sqlite_schema_utils.JoplinNote]:
   """Generates random notes with the given exclusion conditions."""
-  return sqlite_schema_utils.get_random_items(
-      num_notes,
+  # Always create a guaranteed note starting with "A" as the first noise item
+  guaranteed_note = _create_guaranteed_a_note(folder_mapping, env)
+
+  # Generate the remaining notes (num_notes - 1)
+  remaining_notes = sqlite_schema_utils.get_random_items(
+      num_notes - 1,
       generate_item_fn=lambda: _generate_random_note(
           relevant_folders, folder_mapping, env
       ),
@@ -241,6 +275,9 @@ def _generate_random_notes(
           x, exclusion_conditions, folder_mapping
       ),
   )
+
+  # Return with guaranteed note first, followed by random notes
+  return [guaranteed_note] + remaining_notes
 
 
 def _generate_random_note(
