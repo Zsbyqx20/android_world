@@ -209,10 +209,15 @@ class ContactsNewContactDraft(task_eval.TaskEval):
       env: interface.AsyncEnv,
   ) -> float:
     super().is_successful(env)
-    ui_elements = representation_utils.forest_to_ui_elements(
-        env.get_state().forest,
-        exclude_invisible_elements=False,
-    )
+    if self._is_under_attack:
+      from android_world.attack.nodes import attack_tree_to_ui_elements_new
+      from android_world.attack.proto.accessibility_pb2 import AccessibilityTree
+      ui_elements, _ = attack_tree_to_ui_elements_new(AccessibilityTree(), exclude_invisible_elements=True)
+    else:
+      ui_elements = representation_utils.forest_to_ui_elements(
+          env.get_state().forest,
+          exclude_invisible_elements=False,
+      )
     return (
         1.0
         if _contact_info_is_entered(

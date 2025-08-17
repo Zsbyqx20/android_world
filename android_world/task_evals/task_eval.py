@@ -44,6 +44,7 @@ class TaskEval(abc.ABC):
     jsonschema.validate(params, self.schema)
     self._params = params
     self._is_subtask = is_subtask
+    self._is_under_attack = False
 
   @property
   @abc.abstractmethod
@@ -142,6 +143,7 @@ class TaskEval(abc.ABC):
       raise RuntimeError(f"{self.name}.initialize_task() is already called.")
     self.initialized = True
     if isinstance(env.controller._env, A11yAttackGrpcWrapper) and not self._is_subtask:
+      self._is_under_attack = True
       env.controller.set_current_task(self.name)
       env.controller._env.start_service()
 

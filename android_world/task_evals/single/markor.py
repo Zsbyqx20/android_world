@@ -963,7 +963,7 @@ class MarkorTranscribeVideo(Markor):
   def __init__(self, params: dict[str, Any]):
     super().__init__(params)
     self.create_file_task = file_validators.CreateFile(
-        params, device_constants.MARKOR_DATA
+        params, device_constants.MARKOR_DATA, is_subtask=True
     )
 
   def initialize_task(self, env: interface.AsyncEnv) -> None:

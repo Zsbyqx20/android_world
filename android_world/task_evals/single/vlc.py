@@ -194,8 +194,8 @@ class VlcCreateTwoPlaylists(task_eval.TaskEval):
         'files': params['files2'],
         'noise_files': params['noise_files2'],
     }
-    self.task1 = VlcCreatePlaylist(self.task1_params)
-    self.task2 = VlcCreatePlaylist(self.task2_params)
+    self.task1 = VlcCreatePlaylist(self.task1_params, is_subtask=True)
+    self.task2 = VlcCreatePlaylist(self.task2_params, is_subtask=True)
 
   @property
   def goal(self) -> str:
